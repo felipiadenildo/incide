@@ -1,162 +1,211 @@
-.canvas-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border-bottom: 1px solid #e5e7eb;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  min-height: 56px;
-  font-family: 'Inter', -apple-system, sans-serif;
-  position: relative;
-}
+/* src/components/Canvas/CanvasToolbar.css */
 
-/* ================================= */
-/* 🔗 ESQUERDA - GENERAL TOOLS */
-/* ================================= */
-.toolbar-left {
+.canvas-toolbar {
+  height: 32px;
+  padding: 0 8px;
   display: flex;
   align-items: center;
   gap: 8px;
+  background: rgba(248, 250, 252, 0.95);
+  border-bottom: 1px solid #e5e7eb;
+  backdrop-filter: blur(8px);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", sans-serif;
+  font-size: 12px;
+  color: #0f172a;
 }
 
-/* Ícones Minimalistas 36x36 */
-.btn-icon {
-  width: 36px;
-  height: 36px;
-  border: 2px solid transparent;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.9);
+.ctb-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-inline: 2px;
+  border-radius: 999px;
+}
+
+.ctb-group-zoom {
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.ctb-group-editor {
+  margin-left: auto;
+}
+
+/* Chips de tipo de projeto */
+
+.ctb-chip {
+  min-width: 24px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #64748b;
+  font-size: 11px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  font-weight: 600;
-  color: #64748b;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
-.btn-icon:not(.disabled):hover {
+.ctb-chip:hover {
+  background: #e5e7eb;
+  color: #0f172a;
+}
+
+.ctb-chip-active {
+  background: #e0edff;
   border-color: #3b82f6;
-  background: rgba(59, 130, 246, 0.08);
   color: #1d4ed8;
-  transform: translateY(-1px);
 }
 
-.btn-icon:not(.disabled):active {
-  transform: translateY(0) scale(0.98);
+/* Botões icônicos */
+
+.ctb-icon-btn {
+  width: 24px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #64748b;
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, opacity 0.15s;
 }
 
-/* Disabled */
-.btn-icon.disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+.ctb-icon-btn:hover {
+  background: #e5e7eb;
+  color: #0f172a;
 }
 
-.btn-icon.disabled:hover {
+.ctb-icon-btn-active {
+  background: #e0edff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+.ctb-icon-btn-danger {
+  color: #b91c1c;
+}
+
+.ctb-icon-btn-danger:hover {
+  background: #fee2e2;
+  border-color: #f97373;
+  color: #7f1d1d;
+}
+
+/* Estados desabilitados / opacos */
+
+.ctb-icon-btn-disabled,
+.ctb-icon-btn[disabled] {
+  cursor: default;
+  opacity: 0.35;
   border-color: transparent;
-  background: rgba(0, 0, 0, 0.04);
-  transform: none;
+  background: transparent;
+}
+
+.ctb-icon-btn-muted {
   color: #9ca3af;
 }
 
-/* Mode Selector */
-.mode-selector {
-  position: relative;
+.ctb-icon-btn-disabled:hover,
+.ctb-icon-btn[disabled]:hover {
+  background: transparent;
+  color: #9ca3af;
 }
 
-.mode-selector .btn-icon {
-  border-radius: 10px 10px 0 0;
-}
+/* Zoom label */
 
-/* Dropdown */
-.dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-}
-
-.dropdown-item {
-  width: 100%;
-  padding: 12px 16px;
-  border: none;
-  background: none;
-  text-align: left;
-  font-size: 14px;
-  font-weight: 500;
+.ctb-zoom-label {
+  min-width: 38px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #0f172a;
+  font-size: 11px;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  transition: background 0.15s;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
 }
 
-.dropdown-item:hover {
-  background: #f8fafc;
+.ctb-zoom-label:hover {
+  background: #e5e7eb;
+  border-color: #cbd5e1;
 }
 
-/* Selection Counter CENTRAL */
-.selection-counter {
-  min-width: 28px;
-  height: 28px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white;
-  border-radius: 14px;
-  font-size: 12px;
-  font-weight: 700;
+/* Toggle editor mode */
+
+.ctb-toggle-btn {
+  display: inline-flex;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  overflow: hidden;
+  height: 22px;
+  padding: 0;
+}
+
+.ctb-toggle-segment {
+  padding: 0 8px;
+  font-size: 11px;
+  color: #64748b;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  min-width: 20px;
+  transition: background 0.15s, color 0.15s;
 }
 
-/* ================================= */
-/* 🔗 DIREITA - CONTEXTUAL TOOLS */
-/* ================================= */
-.toolbar-right {
+.ctb-toggle-segment-active {
+  background: #e0edff;
+  color: #1d4ed8;
+}
+
+/* Seleção */
+
+.ctb-group-selection {
+  margin-left: 4px;
+}
+
+.ctb-selection-indicator {
+  min-width: 42px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  font-size: 11px;
+  color: #9ca3af;
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, opacity 0.15s;
 }
 
-/* Editor Toggle */
-.editor-toggle.visual {
-  color: #10b981;
+.ctb-selection-indicator-active {
+  border-color: #3b82f6;
+  background: #e0edff;
+  color: #1d4ed8;
 }
 
-.editor-toggle.code {
-  color: #3b82f6;
-}
+/* Responsivo */
 
-/* Responsive - Stack vertical mobile */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .canvas-toolbar {
-    flex-direction: column;
-    gap: 12px;
-    padding: 16px;
-    align-items: stretch;
+    font-size: 11px;
+    gap: 4px;
+    padding: 0 4px;
   }
-  
-  .toolbar-left, .toolbar-right {
-    justify-content: center;
-    gap: 12px;
-  }
-  
-  .selection-counter {
-    order: -1;
-  }
-}
 
-/* High DPI */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  .btn-icon {
-    border-width: 1px;
+  .ctb-group-editor {
+    display: none; /* pode esconder o toggle de editor em telas muito pequenas */
   }
 }

@@ -1,234 +1,151 @@
 #!/usr/bin/env python3
 """
-Organização SIMPLIFICADA - PASTA PLANA
-- src/libs/tikz/*.js e src/libs/circuittikz/*.js
-- category configurada NO ARQUIVO (não em pastas)
+Organiza src/services/ para uma arquitetura de linguagens (TikZ/CircuitTikZ)
+- Reorganiza pastas: code/parsers, code/generators, code/pretty
+- Move/renomeia arquivos existentes de forma segura
+- Cria stubs para parsers por linguagem se não existirem
 """
 
-import os
 import shutil
-import re
 from pathlib import Path
 
 
-def organize_libs_flat():
-    """Organização PLANA - todos arquivos em tikz/ e circuittikz/"""
-    src_libs = Path("src/libs")
+ROOT = Path("src/services")
 
-    # Deleta arquivos/pastas desnecessários
-    trash = [
-        "tikz/elements",
-        "tikz/elements/elementFactory.js",
-        "tikz/elements/shapes.js",
-        "tikz/tikzParser.js",
-        "tikz/index.js",
-        "circuittikz/index.js",
-    ]
 
-    for item in trash:
-        p = src_libs / item
-        if p.exists():
-            if p.is_dir():
-                shutil.rmtree(p)
-            else:
-                p.unlink()
-            print(f"Deletado: {item}")
+def ensure_dirs():
+    (ROOT / "code").mkdir(parents=True, exist_ok=True)
+    (ROOT / "code" / "parsers").mkdir(parents=True, exist_ok=True)
+    (ROOT / "code" / "generators").mkdir(parents=True, exist_ok=True)
+    (ROOT / "code" / "pretty").mkdir(parents=True, exist_ok=True)
+    (ROOT / "elements").mkdir(parents=True, exist_ok=True)
+    print("✔ Pastas base garantidas em src/services/")
 
-    # Garante estrutura plana
-    libs = ["tikz", "circuittikz"]
-    for lib in libs:
-        lib_path = src_libs / lib
-        lib_path.mkdir(exist_ok=True, parents=True)
-        print(f"Pasta plana garantida: src/libs/{lib}/")
 
-    # Arquivos esperados em cada lib
-    files = {
-        "tikz": ["circle.js", "ellipse.js", "line.js", "node.js", "rectangle.js"],
-        "circuittikz": [
-            "ammeter.js",
-            "capacitor.js",
-            "capacitor_polar.js",
-            "diode.js",
-            "euroresistor.js",
-            "fuse.js",
-            "ground.js",
-            "inductor.js",
-            "isource.js",
-            "npn.js",
-            "ohmmeter.js",
-            "opamp.js",
-            "pnj.js",
-            "potentiometer.js",
-            "relay_spdt.js",
-            "resistor.js",
-            "switch_closed.js",
-            "switch_open.js",
-            "thermistor.js",
-            "usresistor.js",
-            "voltmeter.js",
-            "vsource.js",
-            "zener.js",
-        ],
-    }
+def move_existing_files():
+    """Move arquivos atuais para a estrutura alvo, sem sobrescrever conteúdo existente."""
+    # 1) codeParser.js → code/codeParser.legacy.js (mantido como legado)
+    src_code_parser = ROOT / "code" / "codeParser.js"
+    if src_code_parser.exists():
+        dst_legacy = ROOT / "code" / "codeParser.legacy.js"
+        if not dst_legacy.exists():
+            shutil.move(str(src_code_parser), str(dst_legacy))
+            print("→ codeParser.js movido para code/codeParser.legacy.js (legado)")
+        else:
+            print("ℹ codeParser.legacy.js já existe, mantendo os dois (verificar manualmente)")
 
-    moves = []
+    # 2) codePrettyPrinter.js → code/pretty/codePrettyPrinter.js
+    src_pretty = ROOT / "code" / "codePrettyPrinter.js"
+    if src_pretty.exists():
+        dst_pretty = ROOT / "code" / "pretty" / "codePrettyPrinter.js"
+        if not dst_pretty.exists():
+            shutil.move(str(src_pretty), str(dst_pretty))
+            print("→ codePrettyPrinter.js movido para code/pretty/codePrettyPrinter.js")
+        else:
+            print("ℹ code/pretty/codePrettyPrinter.js já existe, verifique duplicação")
 
-    # Move arquivos para src/libs/{tikz|circuittikz}/
-    for lib, filenames in files.items():
-        lib_path = src_libs / lib
+    # 3) generateProjectCode.js → code/generators/generateProjectCode.js
+    src_gen = ROOT / "code" / "generateProjectCode.js"
+    if src_gen.exists():
+        dst_gen = ROOT / "code" / "generators" / "generateProjectCode.js"
+        if not dst_gen.exists():
+            shutil.move(str(src_gen), str(dst_gen))
+            print("→ generateProjectCode.js movido para code/generators/generateProjectCode.js")
+        else:
+            print("ℹ code/generators/generateProjectCode.js já existe, verifique duplicação")
 
-        for filename in filenames:
-            src_file = None
-            for root, dirs, fs in os.walk("src/libs"):
-                if filename in fs:
-                    src_file = Path(root) / filename
-                    break
 
-            if src_file and src_file.exists():
-                dst_file = lib_path / filename
-                if src_file.resolve() != dst_file.resolve():
-                    dst_file.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.move(str(src_file), str(dst_file))
-                    moves.append(f"{src_file.relative_to('src')} -> {lib}/{filename}")
+def create_parser_stubs():
+    """Cria stubs para parsers por linguagem se ainda não existirem."""
+    parse_project = ROOT / "code" / "parsers" / "parseProjectCode.js"
+    parse_tikz = ROOT / "code" / "parsers" / "parseTikz.js"
+    parse_circuit = ROOT / "code" / "parsers" / "parseCircuitikz.js"
 
-    # Converte para padrão descriptor
-    convert_files_flat(src_libs, files)
+    if not parse_project.exists():
+        parse_project.write_text(
+            """// Orquestrador de parsing por linguagem
+// Usa parsers específicos (TikZ, CircuitTikZ, futuras libs)
 
-    print("\n" + "=" * 60)
-    print("ORGANIZAÇÃO PLANA CONCLUÍDA!")
-    print(f"{len(moves)} arquivos movidos")
+import { parseTikz } from './parseTikz'
+import { parseCircuitikz } from './parseCircuitikz'
+
+/**
+ * Faz o roteamento para o parser correto com base em projectType.
+ * Retorna uma lista de elementos prontos para a store.
+ */
+export function parseProjectCode(projectType, code) {
+  if (projectType === 'circuitikz') {
+    return parseCircuitikz(code)
+  }
+  // padrão: TikZ puro
+  return parseTikz(code)
+}
+""",
+            encoding="utf-8",
+        )
+        print("✔ Criado stub: code/parsers/parseProjectCode.js")
+
+    if not parse_tikz.exists():
+        parse_tikz.write_text(
+            """// Parser específico para TikZ
+// TODO: implementar parsing real; por enquanto, stub seguro.
+
+export function parseTikz(code) {
+  // Retorna array de elementos no formato esperado pela store:
+  // [{ type, x, y, ... }]
+  // Implementação inicial pode ser bem simples ou mesmo retornar [].
+  return []
+}
+""",
+            encoding="utf-8",
+        )
+        print("✔ Criado stub: code/parsers/parseTikz.js")
+
+    if not parse_circuit.exists():
+        parse_circuit.write_text(
+            """// Parser específico para CircuiTikZ
+// TODO: implementar parsing real; por enquanto, stub seguro.
+
+export function parseCircuitikz(code) {
+  // Retorna array de elementos CircuitTikZ no formato da store.
+  return []
+}
+""",
+            encoding="utf-8",
+        )
+        print("✔ Criado stub: code/parsers/parseCircuitikz.js")
+
+
+def main():
+    if not ROOT.exists():
+        print("❌ Pasta src/services não encontrada (rode a partir da raiz do projeto).")
+        return
+
+    print("Organizando src/services/…")
+    ensure_dirs()
+    move_existing_files()
+    create_parser_stubs()
+    print("\n✅ Organização de src/services concluída.")
+    print("Estrutura alvo:")
     print(
         """
-Estrutura esperada:
-
-src/libs/
-├── elementRegistry.js
-├── tikz/
-│   ├── circle.js         // category: 'shapes'
-│   ├── rectangle.js      // category: 'shapes'
-│   └── ...
-└── circuittikz/
-    ├── resistor.js       // category: 'bipoles'
-    ├── capacitor.js      // category: 'bipoles'
-    └── ...
+src/services/
+├── code/
+│   ├── parsers/
+│   │   ├── parseProjectCode.js
+│   │   ├── parseTikz.js
+│   │   └── parseCircuitikz.js
+│   ├── generators/
+│   │   └── generateProjectCode.js
+│   ├── pretty/
+│   │   └── codePrettyPrinter.js
+│   └── codeParser.legacy.js   (antigo, para migração gradual)
+├── elements/
+│   └── elementFactory.js
+└── languageRegistry.js
 """
     )
-    print("Agora rode: npm run dev")
-
-
-def convert_files_flat(libs_path: Path, files: dict):
-    """Converte arquivos JS para o padrão:
-    export const descriptor = { type, library, category, label, ...props }
-    """
-    count = 0
-
-    category_map = {
-        # TikZ
-        "circle.js": "shapes",
-        "rectangle.js": "shapes",
-        "ellipse.js": "shapes",
-        "line.js": "shapes",
-        "node.js": "shapes",
-        # CircuitiTikZ - bipoles
-        "resistor.js": "bipoles",
-        "capacitor.js": "bipoles",
-        "capacitor_polar.js": "bipoles",
-        "diode.js": "bipoles",
-        "inductor.js": "bipoles",
-        "fuse.js": "bipoles",
-        "switch_open.js": "bipoles",
-        "switch_closed.js": "bipoles",
-        "relay_spdt.js": "bipoles",
-        "potentiometer.js": "bipoles",
-        "usresistor.js": "bipoles",
-        "euroresistor.js": "bipoles",
-        "zener.js": "bipoles",
-        "pnj.js": "bipoles",
-        "npn.js": "bipoles",
-        "thermistor.js": "bipoles",
-        # Sources/Meters
-        "vsource.js": "sources",
-        "isource.js": "sources",
-        "ammeter.js": "sources",
-        "voltmeter.js": "sources",
-        "ohmmeter.js": "sources",
-        # Outros
-        "ground.js": "symbols",
-        "opamp.js": "symbols",
-    }
-
-    all_names = sum(files.values(), [])
-
-    for lib_path in libs_path.glob("**/*.js"):
-        if lib_path.name not in all_names:
-            continue
-
-        content = lib_path.read_text(encoding="utf-8")
-
-        # Pega primeira const X = { ... }
-        var_match = re.search(r"const\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*\{", content)
-        if not var_match:
-            # Se já tem "export const descriptor", pula
-            if "export const descriptor" in content:
-                continue
-            print(f"Aviso: não encontrado 'const X = {{' em {lib_path}")
-            continue
-
-        var_name = var_match.group(1)
-        category = category_map.get(lib_path.name, "outros")
-        library = lib_path.parent.name
-
-        # Label legível a partir de var_name (Ex: euroResistor -> Euro Resistor)
-        label = re.sub(r"(?<!^)([A-Z])", r" \1", var_name).title()
-
-        body = snippet_existing_object(content)
-        if not body:
-            body = "// TODO: adicionar propriedades (svgRender, tikzCode, etc.)"
-
-        new_js = (
-            f"// src/libs/{library}/{lib_path.name}\n"
-            "/**\n"
-            f" * {label}\n"
-            f" * Library: {library} | Category: {category}\n"
-            " */\n\n"
-            "export const descriptor = {\n"
-            f"  type: '{var_name}',\n"
-            f"  library: '{library}',\n"
-            f"  category: '{category}',\n"
-            f"  label: '{label}',\n"
-            f"{indent_body(body)}\n"
-            "};\n\n"
-            f"console.log('✔ [{library}] {category}/{var_name}');\n"
-        )
-
-        lib_path.write_text(new_js, encoding="utf-8")
-        count += 1
-        print(f"Convertido: {lib_path.relative_to('src')} -> category: '{category}'")
-
-    print(f"{count} arquivos convertidos para o padrão descriptor")
-
-
-def snippet_existing_object(content: str) -> str:
-    """Extrai o objeto JS original depois de 'const X = ' até o próximo export/console ou fim."""
-    obj_match = re.search(
-        r"const\s+\w+\s*=\s*(\{.*\})(?=\s*(?:export|console|$))",
-        content,
-        re.DOTALL,
-    )
-    if not obj_match:
-        return ""
-
-    obj = obj_match.group(1).strip()
-    return obj
-
-
-def indent_body(body: str, spaces: int = 2) -> str:
-    """Indenta corpo do objeto em N espaços (para encaixar dentro do descriptor)."""
-    pad = " " * spaces
-    return "\n".join(pad + line if line.strip() else line for line in body.splitlines())
 
 
 if __name__ == "__main__":
-    print("Organizando src/libs em estrutura PLANA...")
-    print("=" * 60)
-    organize_libs_flat()
+    main()

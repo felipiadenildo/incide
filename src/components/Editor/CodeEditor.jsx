@@ -1,18 +1,18 @@
 /**
  * CodeEditor - Sync automático Canvas ↔ Code
- * 
- * Features:
- * - Canvas → Code: automático (300ms debounce)
- * - Code → Canvas: botão "Apply Code"
+ *
+ * - Canvas → Code: automático
+ * - Code → Canvas: automático (com proteção de loop)
  * - Tabs: Code / Pretty
- * - Validação visual com erros
+ * - Usa generateProjectCode + parseProjectCode por linguagem
  */
 
-import React, { useState, useRef, useEffect } from "react";
-import { useAppStore } from "../../store/useAppStore";
-import CodeParser from "../../services/code/codeParser";
-import "./CodeEditor.css";
-import "./EditorToolbar.css";
+import React, { useState, useRef, useEffect } from "react"
+import { useAppStore } from "../../store/useAppStore"
+import { generateProjectCode } from "../../services/code/generators/generateProjectCode"
+import { parseProjectCode } from "../../services/code/parsers/parseProjectCode"
+import "./CodeEditor.css"
+import "./EditorToolbar.css"
 
 function PrettyView({ elements }) {
   if (!elements?.length) {
@@ -20,7 +20,7 @@ function PrettyView({ elements }) {
       <div className="pretty-empty">
         Nenhum elemento. Insira pelo canvas ou painel Insert.
       </div>
-    );
+    )
   }
 
   return (
@@ -51,100 +51,107 @@ function PrettyView({ elements }) {
         </div>
       ))}
     </div>
-  );
+  )
 }
 
 export function CodeEditor() {
-  const elements = useAppStore((state) => state.elements);
-  const codeEditorValue = useAppStore((state) => state.codeEditorValue);
-  const setCodeEditorValue = useAppStore((state) => state.setCodeEditorValue);
-  const clearElements = useAppStore((state) => state.clearElements);
-  const addElements = useAppStore((state) => state.addElements);
+  const elements = useAppStore((state) => state.elements)
+  const project = useAppStore((state) => state.project)
+  const codeEditorValue = useAppStore((state) => state.codeEditorValue)
+  const setCodeEditorValue = useAppStore((state) => state.setCodeEditorValue)
 
-  const [activeTab, setActiveTab] = useState("code");
-  const [error, setError] = useState(null);
+  // ações da store (use os nomes reais da sua store)
+  const clearElements = useAppStore((state) => state.clearAllElements)
+  const addElements = useAppStore((state) => state.addElements)
 
-  // 🔥 PROTEÇÃO bidirecional contra loops
-  const isCanvasUpdatingCode = useRef(false);
-  const isCodeUpdatingCanvas = useRef(false);
-  const lastElementsHash = useRef("");
-  const lastCodeHash = useRef("");
+  const [activeTab, setActiveTab] = useState("code")
+  const [error, setError] = useState(null)
 
-  console.log("[CodeEditor] render", {
-    elementsCount: elements.length,
-    codeLen: codeEditorValue?.length ?? 0,
-    activeTab,
-  });
+  const isCanvasUpdatingCode = useRef(false)
+  const isCodeUpdatingCanvas = useRef(false)
+  const lastElementsHash = useRef("")
+  const lastCodeHash = useRef("")
 
-  // 🔥 INSTANTÂNEO: Canvas → Code
+  // Canvas → Code (igual ao anterior)
   useEffect(() => {
-    if (isCodeUpdatingCanvas.current) return;
+    if (isCodeUpdatingCanvas.current) return
 
     const elementsHash = JSON.stringify(
-      elements.map((e) => ({ id: e.id, type: e.type, x: e.x, y: e.y, radius: e.radius }))
-    );
+      elements.map((e) => ({
+        id: e.id,
+        type: e.type,
+        x: e.x,
+        y: e.y,
+        radius: e.radius,
+      }))
+    )
 
-    if (elementsHash === lastElementsHash.current) return;
+    if (elementsHash === lastElementsHash.current) return
 
-    console.log("[CodeEditor] Canvas→Code INSTANT");
-    
     try {
-      isCanvasUpdatingCode.current = true;
-      const code = CodeParser.generateCode(elements);
-      lastElementsHash.current = elementsHash;
-      lastCodeHash.current = code;
-      setCodeEditorValue(code);
-      setError(null);
-    } catch (err) {
-      console.error("[CodeEditor] Canvas→Code error:", err);
-      setError("Erro ao gerar código");
-    } finally {
-      isCanvasUpdatingCode.current = false;
-    }
-  }, [elements, setCodeEditorValue]);
+      isCanvasUpdatingCode.current = true
 
-  // 🔥 INSTANTÂNEO: Code → Canvas
+      const code = generateProjectCode(project, elements)
+      lastElementsHash.current = elementsHash
+      lastCodeHash.current = code
+      setCodeEditorValue(code)
+      setError(null)
+    } catch (err) {
+      console.error("[CodeEditor] Canvas→Code error:", err)
+      setError("Erro ao gerar código")
+    } finally {
+      isCanvasUpdatingCode.current = false
+    }
+  }, [elements, project, setCodeEditorValue])
+
+  // Code → Canvas (com clearElements definido)
   useEffect(() => {
-    if (isCanvasUpdatingCode.current) return;
-    if (codeEditorValue === lastCodeHash.current) return;
-
-    console.log("[CodeEditor] Code→Canvas INSTANT");
+    if (isCanvasUpdatingCode.current) return
+    if (codeEditorValue === lastCodeHash.current) return
 
     try {
-      isCodeUpdatingCanvas.current = true;
-      
-      // Validação rápida
-      const { valid, errors } = CodeParser.validateCode(codeEditorValue);
-      if (!valid) {
-        setError(errors.join(" · "));
-        return;
+      isCodeUpdatingCanvas.current = true
+
+      const code = codeEditorValue || ""
+
+      let parsedElements = []
+      try {
+        parsedElements = parseProjectCode(project?.type, code) || []
+        setError(null)
+      } catch (parseErr) {
+        console.error("[CodeEditor] parseProjectCode error:", parseErr)
+        setError("Erro ao interpretar código")
+        return
       }
 
-      // Parse e aplicar
-      const parsedElements = CodeParser.parseCode(codeEditorValue);
-      
-      clearElements();
-      if (parsedElements?.length > 0) {
-        addElements(parsedElements);
-        lastElementsHash.current = JSON.stringify(
-          parsedElements.map((e) => ({ id: e.id, type: e.type, x: e.x, y: e.y, radius: e.radius }))
-        );
+      if (typeof clearElements === "function") {
+        clearElements()
       }
-      
-      lastCodeHash.current = codeEditorValue;
-      setError(null);
-      console.log("[CodeEditor] Code→Canvas applied", parsedElements?.length || 0);
+      if (typeof addElements === "function" && parsedElements.length > 0) {
+        addElements(parsedElements)
+      }
+
+      lastElementsHash.current = JSON.stringify(
+        parsedElements.map((e) => ({
+          id: e.id,
+          type: e.type,
+          x: e.x,
+          y: e.y,
+          radius: e.radius,
+        }))
+      )
+      lastCodeHash.current = code
     } catch (err) {
-      console.error("[CodeEditor] Code→Canvas error:", err);
-      setError("Erro ao aplicar código");
+      console.error("[CodeEditor] Code→Canvas error:", err)
+      setError("Erro ao aplicar código")
     } finally {
-      isCodeUpdatingCanvas.current = false;
+      isCodeUpdatingCanvas.current = false
     }
-  }, [codeEditorValue, clearElements, addElements]);
+  }, [codeEditorValue, project, clearElements, addElements])
 
   const handleCodeChange = (e) => {
-    setCodeEditorValue(e.target.value);
-  };
+    setCodeEditorValue(e.target.value)
+  }
 
   return (
     <div className="code-panel">
@@ -176,28 +183,27 @@ export function CodeEditor() {
             value={codeEditorValue || ""}
             onChange={handleCodeChange}
             spellCheck={false}
-            placeholder="% Digite TikZ/CircuitTikZ - atualiza instantaneamente!"
+            placeholder="% Digite TikZ/CircuitTikZ - sincroniza com o canvas"
             rows={20}
           />
-          {error && (
-            <div className="code-error">
-              ⚠️ {error}
-            </div>
-          )}
-          <div style={{ 
-            padding: '4px 8px', 
-            fontSize: '11px', 
-            color: '#6b7280',
-            borderTop: '1px solid #e5e7eb'
-          }}>
-            ✨ Sync automático ativado - Canvas ↔ Code instantâneo
+          {error && <div className="code-error">⚠️ {error}</div>}
+          <div
+            style={{
+              padding: "4px 8px",
+              fontSize: "11px",
+              color: "#6b7280",
+              borderTop: "1px solid #e5e7eb",
+            }}
+          >
+            ✨ Sync automático ativado – Canvas ↔ Code por linguagem (
+            {project?.type || "tikz"})
           </div>
         </div>
       )}
 
       {activeTab === "pretty" && <PrettyView elements={elements} />}
     </div>
-  );
+  )
 }
 
-export default CodeEditor;
+export default CodeEditor
