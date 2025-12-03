@@ -1,0 +1,20 @@
+.CodeEditor-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.CodeEditor-textarea {
+  flex: 1;
+  width: 100%;
+  border: none;
+  padding: 8px;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.4;
+  outline: none;
+  resize: none;
+  background: #111010;
+  color: aliceblue;
+}

@@ -1,0 +1,236 @@
+.LayersPanel-root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--color-background);
+}
+
+.LayersPanel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.LayersPanel-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.LayersPanel-content::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.LayersPanel-content::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+.LayersPanel-project {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  overflow: hidden;
+  background: var(--color-background);
+}
+
+.LayersPanel-project-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.LayersPanel-project-header:hover {
+  background: var(--color-secondary-bg);
+}
+
+.LayersPanel-project-header.active {
+  background: var(--color-secondary-bg);
+  border-bottom-color: var(--color-primary);
+  box-shadow: inset 0 -2px 0 var(--color-primary);
+}
+
+.LayersPanel-expand-btn {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.LayersPanel-expand-btn:hover {
+  color: var(--color-text);
+}
+
+.LayersPanel-project-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.LayersPanel-project-type {
+  display: inline-block;
+  padding: 2px 4px;
+  background: var(--color-primary);
+  color: #ffffff;
+  border-radius: 2px;
+  font-weight: var(--font-weight-semibold);
+  font-size: 9px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.LayersPanel-project-name {
+  flex: 1;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.LayersPanel-delete {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.LayersPanel-delete:hover {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--color-error);
+}
+
+/* Objects Nested */
+.LayersPanel-objects {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 4px 4px 24px;
+  background: var(--color-background);
+}
+
+.LayersPanel-object {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-background);
+  cursor: pointer;
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.LayersPanel-object:hover {
+  background: var(--color-secondary-bg);
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+.LayersPanel-object.selected {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.LayersPanel-eye {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.LayersPanel-object-type {
+  flex: 1;
+  font-weight: var(--font-weight-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.LayersPanel-object-layer {
+  display: inline-block;
+  padding: 1px 4px;
+  background: rgba(3, 105, 161, 0.2);
+  border-radius: 2px;
+  font-size: 9px;
+  flex-shrink: 0;
+}
+
+.LayersPanel-object-delete {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.LayersPanel-object:hover .LayersPanel-object-delete {
+  opacity: 1;
+}
+
+.LayersPanel-object-delete:hover {
+  color: var(--color-error);
+}
+
+/* ADD ao arquivo existente */
+
+.LayersPanel-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  padding: 20px;
+}
+
+.LayersPanel-empty-objects {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  color: var(--color-text-secondary);
+  font-size: 10px;
+  text-align: center;
+}
