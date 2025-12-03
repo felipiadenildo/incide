@@ -16,10 +16,23 @@
 
 import { elementRegistry } from '../../libs/elementRegistry'
 
+// Detectar tipo pelo código (primeiro \begin encontrado)
+export function detectProjectType(code) {
+  const tikzMatch = code.match(/\\begin\{tikz(picture)?\}/i);
+  const cktMatch = code.match(/\\begin\{circuitikz\}/i);
+  
+  if (tikzMatch) return 'tikz';
+  if (cktMatch) return 'circuitikz';
+  return 'sandbox'; // default
+}
+
+
 export class CodeParser {
   // ===================== API PÚBLICA =====================
 
   static parseCode(code) {
+    const projectType = detectProjectType(code); 
+    console.log("[CodeParser] detected type:", projectType);
     if (!code || typeof code !== 'string') return []
 
     const tikzElements = this._parseTikz(code)

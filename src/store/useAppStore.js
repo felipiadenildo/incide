@@ -21,7 +21,7 @@ const initialState = {
   },
   project: {
     name: "Untitled",
-    type: "tikz",
+    type: "sandbox",  // ← sandbox, tikz, circuitikz
     created: new Date().toISOString(),
     modified: new Date().toISOString(),
   },
@@ -316,7 +316,8 @@ export const useAppStore = create(
 
       setProjectType: (type) =>
         set((state) => {
-          if (!["tikz", "circuitikz"].includes(type)) return state;
+          if (!["sandbox", "tikz", "circuitikz"].includes(type)) return state;
+          console.log("[Store] project type changed to:", type);
           return {
             project: {
               ...state.project,

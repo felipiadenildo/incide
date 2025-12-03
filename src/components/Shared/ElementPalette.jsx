@@ -14,11 +14,18 @@ export function ElementPalette({ onInsert }) {
   const projectType = useAppStore((state) => state.project.type)
 
   const elements = useMemo(() => {
-    return elementRegistry
-      .getAll()
+    const allElements = elementRegistry.getAll();
+    
+    if (projectType === 'sandbox') {
+      // Sandbox: todos os elementos
+      return allElements.sort((a, b) => a.label.localeCompare(b.label));
+    }
+    
+    // tikz/circuitikz: só elementos da lib correspondente
+    return allElements
       .filter((el) => el.library === projectType)
-      .sort((a, b) => a.label.localeCompare(b.label))
-  }, [projectType])
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [projectType]);
 
   if (elements.length === 0) {
     return (

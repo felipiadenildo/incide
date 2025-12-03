@@ -1,14 +1,7 @@
 /**
  * PropertiesPanel - Painel de propriedades do elemento selecionado
  *
- * Usa:
- * - useAppStore: selectedIds, elements, updateElement
- * - elementRegistry: propertySchema do tipo
- *
- * Comportamento:
- * - Nada selecionado: mensagem de ajuda
- * - 1 elemento: mostra propriedades completas (accordion simples por grupo)
- * - 2+ elementos: por enquanto, mostra mensagem (v1)
+ * CORREÇÃO: Console.log para debug e useMemo otimizado
  */
 
 import React, { useMemo, useCallback } from 'react'
@@ -17,31 +10,55 @@ import { elementRegistry } from '../../libs/elementRegistry'
 import { PropertyPanel } from './PropertyPanel'
 import './PropertiesPanel.css'
 
-// PropertiesPanel.jsx
 export function PropertiesPanel() {
   const elements = useAppStore((state) => state.elements);
   const selectedIdsSet = useAppStore((state) => state.selectedIds);
   const updateElement = useAppStore((state) => state.updateElement);
-  const selectedIds = Array.from(selectedIdsSet);
 
+  // 🔥 Memoizar conversão Set → Array
+  const selectedIds = useMemo(() => Array.from(selectedIdsSet), [selectedIdsSet]);
 
+  console.log("[PropertiesPanel] render", {
+    selectedCount: selectedIds.length,
+    elementsCount: elements.length,
+  });
+
+  // 🔥 Memoizar elemento selecionado com dependências específicas
   const selectedElement = useMemo(() => {
-    if (selectedIds.length !== 1) return null
-    return elements.find((e) => e.id === selectedIds[0]) || null
-  }, [elements, selectedIds])
+    if (selectedIds.length !== 1) {
+      console.log("[PropertiesPanel] no single selection");
+      return null;
+    }
+    const elem = elements.find((e) => e.id === selectedIds[0]) || null;
+    console.log("[PropertiesPanel] selectedElement", elem?.id);
+    return elem;
+  }, [elements, selectedIds]);
 
   const descriptor = useMemo(() => {
     if (!selectedElement) return null
     try {
-      return elementRegistry.get(selectedElement.type)
+      const desc = elementRegistry.get(selectedElement.type);
+      console.log("[PropertiesPanel] descriptor loaded", desc?.id);
+      return desc;
     } catch {
+      console.error("[PropertiesPanel] descriptor not found for", selectedElement.type);
       return null
     }
-  }, [selectedElement])
+  }, [selectedElement]);
 
   const handleChange = useCallback(
     (groupKey, propKey, nextValue) => {
-      if (!selectedElement || !descriptor) return
+      if (!selectedElement || !descriptor) {
+        console.log("[PropertiesPanel] handleChange blocked, no selection");
+        return;
+      }
+
+      console.log("[PropertiesPanel] handleChange", { 
+        id: selectedElement.id, 
+        groupKey, 
+        propKey, 
+        nextValue 
+      });
 
       const next = { ...selectedElement }
 
@@ -50,7 +67,6 @@ export function PropertiesPanel() {
       }
 
       // Estratégia simples: propriedades planas no elemento
-      // Para v1, mapeamos diretamente: next[propKey] = valor
       if (groupKey === 'positioning' || groupKey === 'shape' || groupKey === 'appearance' || groupKey === 'component') {
         next[propKey] = nextValue
       }

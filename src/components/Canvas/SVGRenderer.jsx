@@ -1,20 +1,70 @@
 /**
  * SVGRenderer - Renderiza elementos como SVG dentro do Canvas
  *
- * Integra:
- * - useAppStore: elementos, seleção, view (pan/zoom, grid)
- * - elementRegistry: svgRender de cada tipo (TikZ / CircuitTikZ)
- *
- * Suporta:
- * - Seleção single/múltipla (click / Shift+click)
- * - Grid opcional
- * - Zoom baseado em canvasView.zoom
+ * CORREÇÃO: Memoização otimizada por elemento individual
  */
 
-import React, { useMemo } from 'react'
+import React, { useMemo, memo } from 'react'
 import { useAppStore } from '../../store/useAppStore'
 import { elementRegistry } from '../../libs/elementRegistry'
 import './SVGRenderer.css'
+
+/**
+ * 🔥 Componente memoizado para cada elemento individual
+ * Só re-renderiza se suas props mudarem
+ */
+const SVGElement = memo(({ elem, isSelected, zoom, onSelect, onToggleSelect }) => {
+  console.log(`[SVGElement] render ${elem.id}`, { isSelected });
+
+  try {
+    const descriptor = elementRegistry.get(elem.type)
+    const svgProps = descriptor.svgRender(elem, isSelected, zoom)
+
+    const handleClick = (e) => {
+      e.stopPropagation()
+      console.log(`[SVGElement] click ${elem.id}`, { shiftKey: e.shiftKey });
+      if (e.shiftKey) {
+        onToggleSelect(elem.id)
+      } else {
+        onSelect(elem.id)
+      }
+    }
+
+    // Suporte a descriptor que retorna <g> com children virtuais
+    if (svgProps.tag === 'g' && Array.isArray(svgProps.children)) {
+      const { children, ...groupProps } = svgProps
+      return (
+        <g
+          onClick={handleClick}
+          style={{ cursor: 'pointer' }}
+          {...groupProps}
+        >
+          {children.map((child, index) => renderSvgElement(child, `${elem.id}-child-${index}`))}
+        </g>
+      )
+    }
+
+    return (
+      <g
+        onClick={handleClick}
+        style={{ cursor: 'pointer' }}
+      >
+        {renderSvgElement(svgProps, elem.id)}
+      </g>
+    )
+  } catch (e) {
+    console.error(`[SVGElement] Erro ao renderizar '${elem.type}':`, e)
+    return null
+  }
+}, (prevProps, nextProps) => {
+  // 🔥 Custom comparison: só re-renderiza se realmente mudou
+  return (
+    prevProps.elem.id === nextProps.elem.id &&
+    prevProps.isSelected === nextProps.isSelected &&
+    prevProps.zoom === nextProps.zoom &&
+    JSON.stringify(prevProps.elem) === JSON.stringify(nextProps.elem)
+  );
+});
 
 export function SVGRenderer() {
   const elements = useAppStore((s) => s.elements);
@@ -22,75 +72,24 @@ export function SVGRenderer() {
   const canvasView = useAppStore((s) => s.canvasView);
   const selectElement = useAppStore((s) => s.selectElement);
   const toggleSelection = useAppStore((s) => s.toggleSelection);
+  const clearSelection = useAppStore((s) => s.clearSelection);
 
-  const selectedIds = Array.from(selectedIdsSet);
+  console.log("[SVGRenderer] render", {
+    elementsCount: elements.length,
+    selectedCount: selectedIdsSet.size,
+    zoom: canvasView.zoom,
+  });
 
-
-  const svgElements = useMemo(() => {
-    return elements.map((elem) => {
-      try {
-        const descriptor = elementRegistry.get(elem.type)
-        const isSelected = selectedIds.includes(elem.id)
-
-        const svgProps = descriptor.svgRender(
-          elem,
-          isSelected,
-          canvasView.zoom
-        )
-
-        // Suporte a descriptor que retorna <g> com children virtuais
-        if (svgProps.tag === 'g' && Array.isArray(svgProps.children)) {
-          const { children, ...groupProps } = svgProps
-          return (
-            <g
-              key={elem.id}
-              onClick={(e) => {
-                e.stopPropagation()
-                if (e.shiftKey) {
-                  toggleSelection(elem.id)
-                } else {
-                  selectElement(elem.id)
-                }
-              }}
-              style={{ cursor: 'pointer' }}
-              {...groupProps}
-            >
-              {children.map((child, index) => renderSvgElement(child, `${elem.id}-child-${index}`))}
-            </g>
-          )
-        }
-
-        return (
-          <g
-            key={elem.id}
-            onClick={(e) => {
-              e.stopPropagation()
-              if (e.shiftKey) {
-                toggleSelection(elem.id)
-              } else {
-                selectElement(elem.id)
-              }
-            }}
-            style={{ cursor: 'pointer' }}
-          >
-            {renderSvgElement(svgProps, elem.id)}
-          </g>
-        )
-      } catch (e) {
-        console.error(`Erro ao renderizar elemento '${elem.type}':`, e)
-        return null
-      }
-    })
-  }, [elements, selectedIds, canvasView.zoom, selectElement, toggleSelection])
+  // 🔥 Converter Set para Array apenas uma vez
+  const selectedIds = useMemo(() => Array.from(selectedIdsSet), [selectedIdsSet]);
 
   return (
     <svg
       className="svg-renderer"
-      // viewBox simples; mais tarde podemos mapear coords TikZ → pixels
       viewBox={`${canvasView.panX} ${canvasView.panY} 20 15`}
       onClick={() => {
-        // Click no fundo limpa seleção
-        useAppStore.getState().clearSelection()
+        console.log("[SVGRenderer] background click, clearing selection");
+        clearSelection()
       }}
     >
       {/* Grid por pattern */}
@@ -122,7 +121,17 @@ export function SVGRenderer() {
         />
       )}
 
-      {svgElements}
+      {/* 🔥 Renderizar cada elemento com memoização individual */}
+      {elements.map((elem) => (
+        <SVGElement
+          key={elem.id}
+          elem={elem}
+          isSelected={selectedIds.includes(elem.id)}
+          zoom={canvasView.zoom}
+          onSelect={selectElement}
+          onToggleSelect={toggleSelection}
+        />
+      ))}
     </svg>
   )
 }

@@ -63,3 +63,36 @@
   align-items: center;
   justify-content: center;
 }
+
+/* RESIZE HANDLES - ADICIONAR AO FINAL */
+.resize-handle {
+  width: 6px !important;
+  background: #e5e7eb !important;
+  cursor: col-resize !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+  z-index: 100 !important;
+  transition: all 0.2s ease !important;
+}
+
+.resize-handle:hover {
+  background: #3b82f6 !important;
+  width: 8px !important;
+}
+
+.resize-handle:active {
+  background: #2563eb !important;
+}
+
+/* FORÇAR painéis a respeitarem width dinâmica */
+.left-panel, .right-panel {
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+  transition: width 0.1s ease !important;
+}
+
+/* stacked-panel flex fix */
+.stacked-panel {
+  display: flex !important;
+  flex-direction: row !important;
+}

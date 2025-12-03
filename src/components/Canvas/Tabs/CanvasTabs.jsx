@@ -1,29 +1,52 @@
-/**
- * CanvasTabs - Abas de projetos / documentos
- *
- * Por enquanto: uma aba estática "Main".
- * Depois: integrar com múltiplos projetos / documentos.
- */
-
-import React from 'react'
-import { useAppStore } from '../../../store/useAppStore'
-import './CanvasTabs.css'
+import React, { useState } from 'react';
+import { useAppStore } from '../../../store/useAppStore';
+import './CanvasTabs.css';
 
 export function CanvasTabs() {
-  const project = useAppStore((state) => state.project)
+  const projectType = useAppStore((state) => state.project.type);
+  const setProjectType = useAppStore((state) => state.setProjectType);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const types = [
+    { id: 'sandbox', label: 'Sandbox (todos)' },
+    { id: 'tikz', label: 'TikZ' },
+    { id: 'circuitikz', label: 'Circuitikz' }
+  ];
+
+  const currentType = types.find(t => t.id === projectType) || types[0];
 
   return (
     <div className="canvas-tabs">
-      <div className="canvas-tab canvas-tab-active">
-        <span className="canvas-tab-title">
-          {project.name || 'Main'}
-        </span>
-        <span className="canvas-tab-subtitle">
-          {project.type === 'tikz' ? 'TikZ' : 'CircuitTikZ'}
-        </span>
+      <div className="canvas-tab-group">
+        {/* Tipo atual com dropdown */}
+        <div className="canvas-tab-dropdown">
+          <button
+            className="canvas-tab canvas-tab-active"
+            onClick={() => setShowDropdown(!showDropdown)}
+          >
+            {currentType.label} ▼
+          </button>
+          
+          {showDropdown && (
+            <div className="dropdown-menu">
+              {types.map((type) => (
+                <button
+                  key={type.id}
+                  className="dropdown-item"
+                  onClick={() => {
+                    setProjectType(type.id);
+                    setShowDropdown(false);
+                  }}
+                >
+                  {type.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default CanvasTabs
+export default CanvasTabs;
