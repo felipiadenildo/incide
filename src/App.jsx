@@ -1,13 +1,12 @@
 import "./App.css";
-import { useDarkMode } from "./hooks/useDarkMode.js";
+import { useDarkMode } from "./hooks/ui/useDarkMode.js";
 import MainLayout from "./components/Layout/MainLayout.jsx";
 
 function App() {
-  // Dark mode já está em MainLayout via TopBar
-  const { isDark } = useDarkMode();
+  const { isDark, toggleTheme } = useDarkMode?.() || { isDark: false, toggleTheme: () => {} };
 
   return (
-    <div className="App-root" data-color-scheme={isDark ? "dark" : "light"}>
+    <div className={isDark ? "theme-dark" : "theme-light"}>
       <MainLayout />
     </div>
   );

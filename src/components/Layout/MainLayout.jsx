@@ -1,13 +1,13 @@
-import React from 'react'
-import TopBar from '../TopBar/TopBar'
-import { Canvas } from '../Canvas/Canvas'
-import { CanvasToolbar } from '../Canvas/Toolbar/CanvasToolbar'
-import { CanvasTabs } from '../Canvas/Tabs/CanvasTabs'
-import { LayersPanel } from '../Panels/LayersPanel'
-import { InsertPanel } from '../Panels/InsertPanel'
-import { PropertiesPanel } from '../Panels/PropertiesPanel'
-import { CodeEditor } from '../Editor/CodeEditor'
-import './StackedPanels.css'
+import React from "react";
+import TopBar from "../TopBar/TopBar.jsx";
+import { Canvas } from "../Canvas/Canvas.jsx";
+import { CanvasToolbar } from "../Canvas/Toolbar/CanvasToolbar.jsx";
+import { CanvasTabs } from "../Canvas/Tabs/CanvasTabs.jsx";
+import { LayersPanel } from "../Panels/LayersPanel.jsx";
+import { InsertPanel } from "../Panels/InsertPanel.jsx";
+import { PropertiesPanel } from "../Panels/PropertiesPanel.jsx";
+import { CodeEditor } from "../Editor/CodeEditor.jsx";
+import "./StackedPanels.css";
 
 export function MainLayout() {
   return (
@@ -34,7 +34,7 @@ export function MainLayout() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default MainLayout
+export default MainLayout;

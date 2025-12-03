@@ -17,16 +17,13 @@ import { elementRegistry } from '../../libs/elementRegistry'
 import { PropertyPanel } from './PropertyPanel'
 import './PropertiesPanel.css'
 
+// PropertiesPanel.jsx
 export function PropertiesPanel() {
-  const {
-    elements,
-    selectedIds,
-    updateElement,
-  } = useAppStore((state) => ({
-    elements: state.elements,
-    selectedIds: Array.from(state.selectedIds),
-    updateElement: state.updateElement,
-  }))
+  const elements = useAppStore((state) => state.elements);
+  const selectedIdsSet = useAppStore((state) => state.selectedIds);
+  const updateElement = useAppStore((state) => state.updateElement);
+  const selectedIds = Array.from(selectedIdsSet);
+
 
   const selectedElement = useMemo(() => {
     if (selectedIds.length !== 1) return null

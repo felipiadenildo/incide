@@ -11,26 +11,17 @@ import React from 'react'
 import { useAppStore } from '../../../store/useAppStore'
 import './CanvasToolbar.css'
 
+// CanvasToolbar.jsx
 export function CanvasToolbar() {
-  const {
-    undo,
-    redo,
-    addZoom,
-    resetView,
-    toggleGrid,
-    canvasView,
-    getSelectionCount,
-  } = useAppStore((state) => ({
-    undo: state.undo,
-    redo: state.redo,
-    addZoom: state.addZoom,
-    resetView: state.resetView,
-    toggleGrid: state.toggleGrid,
-    canvasView: state.canvasView,
-    getSelectionCount: state.getSelectionCount,
-  }))
+  const undo = useAppStore((state) => state.undo);
+  const redo = useAppStore((state) => state.redo);
+  const addZoom = useAppStore((state) => state.addZoom);
+  const resetView = useAppStore((state) => state.resetView);
+  const toggleGrid = useAppStore((state) => state.toggleGrid);
+  const canvasView = useAppStore((state) => state.canvasView);
+  const getSelectionCount = useAppStore((state) => state.getSelectionCount);
+  const selectionCount = getSelectionCount();
 
-  const selectionCount = getSelectionCount()
 
   return (
     <div className="canvas-toolbar">

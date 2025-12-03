@@ -17,19 +17,14 @@ import { elementRegistry } from '../../libs/elementRegistry'
 import './SVGRenderer.css'
 
 export function SVGRenderer() {
-  const {
-    elements,
-    selectedIds,
-    canvasView,
-    selectElement,
-    toggleSelection,
-  } = useAppStore((state) => ({
-    elements: state.elements,
-    selectedIds: Array.from(state.selectedIds),
-    canvasView: state.canvasView,
-    selectElement: state.selectElement,
-    toggleSelection: state.toggleSelection,
-  }))
+  const elements = useAppStore((s) => s.elements);
+  const selectedIdsSet = useAppStore((s) => s.selectedIds);
+  const canvasView = useAppStore((s) => s.canvasView);
+  const selectElement = useAppStore((s) => s.selectElement);
+  const toggleSelection = useAppStore((s) => s.toggleSelection);
+
+  const selectedIds = Array.from(selectedIdsSet);
+
 
   const svgElements = useMemo(() => {
     return elements.map((elem) => {

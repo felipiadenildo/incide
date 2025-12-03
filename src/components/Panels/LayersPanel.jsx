@@ -10,17 +10,13 @@ import { useAppStore } from '../../store/useAppStore'
 import './LayersPanel.css'
 
 export function LayersPanel() {
-  const {
-    elements,
-    selectedIds,
-    selectElement,
-    toggleSelection,
-  } = useAppStore((state) => ({
-    elements: state.elements,
-    selectedIds: Array.from(state.selectedIds),
-    selectElement: state.selectElement,
-    toggleSelection: state.toggleSelection,
-  }))
+  const elements = useAppStore((s) => s.elements);
+  const selectedIdsSet = useAppStore((s) => s.selectedIds);
+  // const canvasView = useAppStore((s) => s.canvasView);
+  const selectElement = useAppStore((s) => s.selectElement);
+  const toggleSelection = useAppStore((s) => s.toggleSelection);
+
+  const selectedIds = Array.from(selectedIdsSet);
 
   return (
     <div className="layers-panel">
