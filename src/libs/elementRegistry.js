@@ -1,33 +1,27 @@
 /**
- * ElementRegistry - Factory Pattern para gerenciar elementos
- * Versão: 1.0
+ * ElementRegistry - Registro centralizado de elementos
  */
 
 class ElementRegistry {
   constructor() {
     this.elements = new Map()
-    this.log = []
+    this.categories = new Map()
   }
 
   register(id, descriptor) {
-    if (!id || !descriptor) {
-      console.error(`[ElementRegistry] ID e descriptor são obrigatórios`)
-      return false
-    }
-    
-    if (this.elements.has(id)) {
-      console.warn(`[ElementRegistry] Elemento ${id} já registrado, substituindo`)
-    }
-    
+    this._validateDescriptor(id, descriptor)
     this.elements.set(id, descriptor)
-    this.log.push({ action: 'register', id, timestamp: new Date().toISOString() })
-    return true
+
+    const category = descriptor.category
+    if (!this.categories.has(category)) {
+      this.categories.set(category, [])
+    }
+    this.categories.get(category).push(id)
   }
 
   get(id) {
     if (!this.elements.has(id)) {
-      console.warn(`[ElementRegistry] Elemento ${id} não encontrado`)
-      return null
+      throw new Error(`Elemento '${id}' não registrado`)
     }
     return this.elements.get(id)
   }
@@ -36,34 +30,46 @@ class ElementRegistry {
     return Array.from(this.elements.values())
   }
 
-  getByLibrary(library) {
-    return Array.from(this.elements.values())
-      .filter(e => e.library === library)
-  }
-
   getByCategory(category) {
-    return Array.from(this.elements.values())
-      .filter(e => e.category === category)
+    const ids = this.categories.get(category) || []
+    return ids.map(id => this.elements.get(id))
   }
 
-  unregister(id) {
-    const result = this.elements.delete(id)
-    if (result) {
-      this.log.push({ action: 'unregister', id, timestamp: new Date().toISOString() })
+  getByLibrary(library) {
+    return this.getAll().filter(elem => elem.library === library)
+  }
+
+  getCategories() {
+    return Array.from(this.categories.keys())
+  }
+
+  _validateDescriptor(id, descriptor) {
+    const required = [
+      'id', 'type', 'library', 'label', 'category',
+      'svgRender', 'propertySchema', 'defaults',
+      'codeGenerator', 'validate'
+    ]
+
+    for (const field of required) {
+      if (!(field in descriptor)) {
+        throw new Error(`Descriptor '${id}' falta campo: '${field}'`)
+      }
     }
-    return result
   }
 
-  getStatistics() {
-    return {
-      total: this.elements.size,
-      byLibrary: {
-        tikz: this.getByLibrary('tikz').length,
-        circuitikz: this.getByLibrary('circuitikz').length
-      },
-      operations: this.log.length
+  clear() {
+    this.elements.clear()
+    this.categories.clear()
+  }
+
+  debug() {
+    console.log('=== ElementRegistry ===')
+    console.log(`Total: ${this.elements.size}`)
+    for (const [cat, ids] of this.categories) {
+      console.log(`  ${cat}: ${ids.join(', ')}`)
     }
   }
 }
 
 export const elementRegistry = new ElementRegistry()
+export { ElementRegistry }

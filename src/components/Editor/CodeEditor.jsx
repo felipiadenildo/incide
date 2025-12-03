@@ -1,46 +1,145 @@
-import "./CodeEditor.css";
-import { useEffect, useState } from "react";
-import { useAppStore } from "../../store/useAppStore.js";
-import { useKeyboardShortcuts } from "../../hooks/useKeyboardShortcuts.js";
-import EditorToolbar from "./EditorToolbar.jsx";
+/**
+ * CodeEditor - Painel de código (Code / Pretty)
+ *
+ * Tabs:
+ * - Code: editor de texto TikZ/CircuitTikZ
+ * - Pretty: lista de elementos (stub v1)
+ */
 
-function CodeEditor() {
-  useKeyboardShortcuts();
+import React, { useState, useEffect } from 'react'
+import { useAppStore } from '../../store/useAppStore'
+import CodeParser from '../../services/code/codeParser'
+import './CodeEditor.css'
+import './EditorToolbar.css'
 
-  const projects = useAppStore((s) => s.projects || []);
-  const activeProjectId = useAppStore((s) => s.activeProjectId);
-  const setCode = useAppStore((s) => s.setCode);
-
-  const code = (() => {
-    if (!projects || projects.length === 0) return "";
-    const project = projects.find((p) => p.id === activeProjectId);
-    return project?.code || "";
-  })();
-
-  const [editorCode, setEditorCode] = useState(code);
-
-  useEffect(() => {
-    setEditorCode(code);
-  }, [code, activeProjectId]);
-
-  const handleChange = (e) => {
-    const value = e.target.value;
-    setEditorCode(value);
-    setCode(value);
-  };
+function PrettyView({ elements }) {
+  if (!elements?.length) {
+    return (
+      <div className="pretty-empty">
+        Nenhum elemento. Insira pelo canvas ou painel Insert.
+      </div>
+    )
+  }
 
   return (
-    <div className="CodeEditor-root">
-      <EditorToolbar />
-      <textarea
-        className="CodeEditor-textarea"
-        value={editorCode}
-        onChange={handleChange}
-        placeholder="Enter TikZ code..."
-        spellCheck="false"
-      />
+    <div className="pretty-list">
+      {elements.map((el) => (
+        <div key={el.id} className="pretty-card">
+          <div className="pretty-header">
+            <span className="pretty-title">
+              {el.type} · {el.id}
+            </span>
+          </div>
+          <div className="pretty-body">
+            {'x' in el && 'y' in el && (
+              <div className="pretty-row">
+                <span>Posição</span>
+                <span>
+                  ({el.x?.toFixed?.(2) ?? el.x},{' '}
+                  {el.y?.toFixed?.(2) ?? el.y})
+                </span>
+              </div>
+            )}
+            {'radius' in el && (
+              <div className="pretty-row">
+                <span>Raio</span>
+                <span>{el.radius}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
     </div>
-  );
+  )
 }
 
-export default CodeEditor;
+export function CodeEditor() {
+  const {
+    elements,
+    codeEditorValue,
+    setCodeEditorValue,
+    addElements,
+    clearElements,
+  } = useAppStore((state) => ({
+    elements: state.elements,
+    codeEditorValue: state.codeEditorValue,
+    setCodeEditorValue: state.setCodeEditorValue,
+    addElements: state.addElements,
+    clearElements: state.clearElements,
+  }))
+
+  const [activeTab, setActiveTab] = useState('code') // 'code' | 'pretty'
+  const [error, setError] = useState(null)
+
+  // Sync canvas → code (geração automática simples)
+  useEffect(() => {
+    const code = CodeParser.generateCode(elements)
+    setCodeEditorValue(code)
+  }, [elements, setCodeEditorValue])
+
+  const handleCodeChange = (e) => {
+    const nextCode = e.target.value
+    setCodeEditorValue(nextCode)
+
+    // Parse básico com debounce simples (v1: imediato)
+    const { valid, errors } = CodeParser.validateCode(nextCode)
+    if (!valid) {
+      setError(errors.join(' · '))
+    } else {
+      setError(null)
+      const parsedElements = CodeParser.parseCode(nextCode)
+      if (parsedElements && parsedElements.length > 0) {
+        clearElements()
+        addElements(parsedElements)
+      }
+    }
+  }
+
+  return (
+    <div className="code-panel">
+      <div className="panel-tabs">
+        <button
+          type="button"
+          className={
+            'panel-tab' + (activeTab === 'code' ? ' panel-tab-active' : '')
+          }
+          onClick={() => setActiveTab('code')}
+        >
+          Code
+        </button>
+        <button
+          type="button"
+          className={
+            'panel-tab' + (activeTab === 'pretty' ? ' panel-tab-active' : '')
+          }
+          onClick={() => setActiveTab('pretty')}
+        >
+          Pretty
+        </button>
+      </div>
+
+      {activeTab === 'code' && (
+        <div className="code-editor-wrapper">
+          <textarea
+            className="code-editor-textarea"
+            value={codeEditorValue}
+            onChange={handleCodeChange}
+            spellCheck={false}
+            placeholder="% TikZ / CircuitTikZ code aqui..."
+          />
+          {error && (
+            <div className="code-error">
+              {error}
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'pretty' && (
+        <PrettyView elements={elements} />
+      )}
+    </div>
+  )
+}
+
+export default CodeEditor

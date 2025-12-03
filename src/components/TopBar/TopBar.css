@@ -1,2 +1,74 @@
-/* Generated CSS Template */
-/* TODO: Adicionar estilos específicos */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 24px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.topbar-left,
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.topbar-center {
+  flex: 1;
+  text-align: center;
+}
+
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  color: #1f2937;
+}
+
+.logo-icon {
+  font-size: 20px;
+}
+
+.logo-text {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .logo-text {
+    display: inline;
+  }
+}
+
+.project-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.info-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #f3f4f6;
+}
+
+.info-label.info-muted {
+  color: #9ca3af;
+  background: transparent;
+}
+
+.info-label.info-version {
+  color: #d1d5db;
+  font-size: 11px;
+}

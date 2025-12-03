@@ -1,70 +1,40 @@
-import "./MainLayout.css";
-import { useState } from "react";
-import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
-import TopBar from "./TopBar.jsx";
-import CodeEditor from "../Editor/CodeEditor.jsx";
-import StackedPanels from "../StackedPanels/StackedPanels.jsx";
-import Canvas from "../Canvas/Canvas.jsx";
+import React from 'react'
+import TopBar from '../TopBar/TopBar'
+import { Canvas } from '../Canvas/Canvas'
+import { CanvasToolbar } from '../Canvas/Toolbar/CanvasToolbar'
+import { CanvasTabs } from '../Canvas/Tabs/CanvasTabs'
+import { LayersPanel } from '../Panels/LayersPanel'
+import { InsertPanel } from '../Panels/InsertPanel'
+import { PropertiesPanel } from '../Panels/PropertiesPanel'
+import { CodeEditor } from '../Editor/CodeEditor'
+import './StackedPanels.css'
 
-const EDITOR_PANEL_KEY = "editorPanelSize";
-const EDITOR_MIN = 30;
-const EDITOR_MAX = 80;
-const EDITOR_DEFAULT = 60;
-
-function MainLayout() {
-  const [editorSize, setEditorSize] = useState(() => {
-    const saved = localStorage.getItem(EDITOR_PANEL_KEY);
-    return saved ? parseFloat(saved) : EDITOR_DEFAULT;
-  });
-
-  const handleVerticalLayout = (sizes) => {
-    const newEditor = sizes[0];
-    if (newEditor >= EDITOR_MIN && newEditor <= EDITOR_MAX) {
-      setEditorSize(newEditor);
-      localStorage.setItem(EDITOR_PANEL_KEY, newEditor.toString());
-      console.log("📐 Editor panel:", newEditor.toFixed(1), "%");
-    }
-  };
-
+export function MainLayout() {
   return (
-    <div className="MainLayout-root">
+    <div className="app-root">
       <TopBar />
 
-      {/* Horizontal: Left Column | Canvas */}
-      <PanelGroup
-        direction="horizontal"
-        className="MainLayout-horizontal"
-      >
-        {/* LEFT COLUMN: Editor + StackedPanels (Vertical) */}
-        <Panel defaultSize={40} minSize={20} maxSize={60}>
-          <PanelGroup
-            direction="vertical"
-            onLayout={handleVerticalLayout}
-            className="MainLayout-vertical"
-          >
-            {/* Editor */}
-            <Panel defaultSize={editorSize} minSize={EDITOR_MIN} maxSize={EDITOR_MAX}>
-              <CodeEditor />
-            </Panel>
+      <div className="stacked-panel">
+        <div className="left-panel">
+          <LayersPanel />
+          <InsertPanel />
+        </div>
 
-            <PanelResizeHandle className="MainLayout-handle" />
+        <div className="center-panel">
+          <CanvasToolbar />
+          <div className="center-canvas">
+            <Canvas />
+          </div>
+          <CanvasTabs />
+        </div>
 
-            {/* StackedPanels */}
-            <Panel defaultSize={100 - editorSize} minSize={EDITOR_MIN}>
-              <StackedPanels />
-            </Panel>
-          </PanelGroup>
-        </Panel>
-
-        <PanelResizeHandle className="MainLayout-handle" />
-
-        {/* RIGHT COLUMN: Canvas */}
-        <Panel defaultSize={60} minSize={20}>
-          <Canvas />
-        </Panel>
-      </PanelGroup>
+        <div className="right-panel">
+          <PropertiesPanel />
+          <CodeEditor />
+        </div>
+      </div>
     </div>
-  );
+  )
 }
 
-export default MainLayout;
+export default MainLayout

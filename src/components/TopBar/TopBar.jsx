@@ -1,81 +1,48 @@
-import "./TopBar.css";
-import { useAppStore } from "../../store/useAppStore.js";
-import { useDarkMode } from "../../hooks/useDarkMode.js";
-import {
-  Undo2,
-  Redo2,
-  RotateCcw,
-  Grid2x2,
-  Eye,
-  Settings,
-  Layers,
-  Moon,
-  Sun,
-  Trash2,
-} from "lucide-react";
+/**
+ * TopBar - Header info only (sem botões de ação)
+ */
 
-function TopBar() {
-  const { isDark, toggle } = useDarkMode();
-  const selectedIds = useAppStore((s) => s.selectedIds);
-  const selectedId = useAppStore((s) => s.selectedElementId);
+import React from 'react'
+import { useAppStore } from '../../store/useAppStore'
+import './TopBar.css'
 
-  // Context detection
-  const hasSelection = selectedId || selectedIds.length > 0;
+export function TopBar() {
+  const { project, elements } = useAppStore((state) => ({
+    project: state.project,
+    elements: state.elements,
+  }))
 
   return (
-    <div className="TopBar-root">
-      {/* LEFT: Editor Actions */}
-      <div className="TopBar-group">
-        <button className="TopBar-btn" title="Desfazer (Ctrl+Z)">
-          <Undo2 size={16} />
-        </button>
-        <button className="TopBar-btn" title="Refazer (Ctrl+Y)">
-          <Redo2 size={16} />
-        </button>
-        <button className="TopBar-btn" title="Reset">
-          <RotateCcw size={16} />
-        </button>
+    <header className="topbar">
+      <div className="topbar-left">
+        {/* Logo */}
+        <div className="topbar-logo">
+          <span className="logo-icon">📐</span>
+          <span className="logo-text">TikZ Editor</span>
+        </div>
       </div>
 
-      {/* CENTER: Separator */}
-      <div className="TopBar-separator" />
-
-      {/* CENTER: Canvas Actions */}
-      <div className="TopBar-group">
-        <button className="TopBar-btn" title="Grid">
-          <Grid2x2 size={16} />
-        </button>
-        <button className="TopBar-btn" title="Zoom">
-          <Eye size={16} />
-        </button>
+      <div className="topbar-center">
+        {/* Project name */}
+        <span className="project-name">{project.name}</span>
       </div>
 
-      {/* CENTER: Separator */}
-      <div className="TopBar-separator" />
+      <div className="topbar-right">
+        {/* Project type */}
+        <span className="info-label">
+          {project.type === 'tikz' ? '🎨 TikZ' : '⚡ CircuitTikZ'}
+        </span>
 
-      {/* CENTER-RIGHT: Selection Info */}
-      <div className="TopBar-info">
-        {hasSelection && (
-          <span className="TopBar-text">
-            {selectedIds.length > 0
-              ? `${selectedIds.length} elementos`
-              : "1 elemento"}
-          </span>
-        )}
-      </div>
+        {/* Element count */}
+        <span className="info-label info-muted">
+          Elements: {elements.length}
+        </span>
 
-      {/* RIGHT: Global Actions */}
-      <div className="TopBar-group TopBar-right">
-        <button
-          className="TopBar-btn"
-          onClick={toggle}
-          title="Toggle dark mode"
-        >
-          {isDark ? <Sun size={16} /> : <Moon size={16} />}
-        </button>
+        {/* Version */}
+        <span className="info-label info-version">v2.2</span>
       </div>
-    </div>
-  );
+    </header>
+  )
 }
 
-export default TopBar;
+export default TopBar

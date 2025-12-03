@@ -1,161 +1,137 @@
-import "./PropertiesPanel.css";
-import { useAppStore } from "../../store/useAppStore.js";
+/**
+ * PropertiesPanel - Painel de propriedades do elemento selecionado
+ *
+ * Usa:
+ * - useAppStore: selectedIds, elements, updateElement
+ * - elementRegistry: propertySchema do tipo
+ *
+ * Comportamento:
+ * - Nada selecionado: mensagem de ajuda
+ * - 1 elemento: mostra propriedades completas (accordion simples por grupo)
+ * - 2+ elementos: por enquanto, mostra mensagem (v1)
+ */
 
-function PropertiesPanel() {
-  const selectedId = useAppStore((s) => s.selectedElementId);
-  const selectedIds = useAppStore((s) => s.selectedIds);
-  const projects = useAppStore((s) => s.projects || []);
-  const activeProjectId = useAppStore((s) => s.activeProjectId);
-  const updateDiagramObject = useAppStore((s) => s.updateDiagramObject);
+import React, { useMemo, useCallback } from 'react'
+import { useAppStore } from '../../store/useAppStore'
+import { elementRegistry } from '../../libs/elementRegistry'
+import { PropertyPanel } from './PropertyPanel'
+import './PropertiesPanel.css'
 
-  if (!projects || projects.length === 0) {
+export function PropertiesPanel() {
+  const {
+    elements,
+    selectedIds,
+    updateElement,
+  } = useAppStore((state) => ({
+    elements: state.elements,
+    selectedIds: Array.from(state.selectedIds),
+    updateElement: state.updateElement,
+  }))
+
+  const selectedElement = useMemo(() => {
+    if (selectedIds.length !== 1) return null
+    return elements.find((e) => e.id === selectedIds[0]) || null
+  }, [elements, selectedIds])
+
+  const descriptor = useMemo(() => {
+    if (!selectedElement) return null
+    try {
+      return elementRegistry.get(selectedElement.type)
+    } catch {
+      return null
+    }
+  }, [selectedElement])
+
+  const handleChange = useCallback(
+    (groupKey, propKey, nextValue) => {
+      if (!selectedElement || !descriptor) return
+
+      const next = { ...selectedElement }
+
+      if (!next[groupKey]) {
+        next[groupKey] = {}
+      }
+
+      // Estratégia simples: propriedades planas no elemento
+      // Para v1, mapeamos diretamente: next[propKey] = valor
+      if (groupKey === 'positioning' || groupKey === 'shape' || groupKey === 'appearance' || groupKey === 'component') {
+        next[propKey] = nextValue
+      }
+
+      updateElement(selectedElement.id, next)
+    },
+    [selectedElement, descriptor, updateElement]
+  )
+
+  // Estados de UI
+  if (selectedIds.length === 0) {
     return (
-      <div className="PropertiesPanel-root">
-        <div className="PropertiesPanel-empty">
-          <p>Nenhum projeto</p>
+      <div className="properties-panel">
+        <div className="properties-header">
+          <span className="properties-title">Properties</span>
+        </div>
+        <div className="properties-empty">
+          Selecione um elemento no canvas para editar as propriedades.
         </div>
       </div>
-    );
+    )
   }
 
-  const project = projects.find((p) => p.id === activeProjectId);
-  const objects = project?.objects || [];
-
-  if (!selectedId && selectedIds.length === 0) {
+  if (selectedIds.length > 1) {
     return (
-      <div className="PropertiesPanel-root">
-        <div className="PropertiesPanel-empty">
-          <p>Nenhum elemento selecionado</p>
+      <div className="properties-panel">
+        <div className="properties-header">
+          <span className="properties-title">Properties</span>
+          <span className="properties-subtitle">
+            {selectedIds.length} elementos selecionados
+          </span>
+        </div>
+        <div className="properties-empty">
+          Edição em grupo será adicionada depois. Por enquanto, selecione apenas um elemento.
         </div>
       </div>
-    );
+    )
   }
 
-  const activeId = selectedIds.length > 0 ? selectedIds[0] : selectedId;
-  const obj = objects.find((o) => o.id === activeId);
-
-  if (!obj) {
+  if (!selectedElement || !descriptor) {
     return (
-      <div className="PropertiesPanel-root">
-        <div className="PropertiesPanel-empty">
-          <p>Elemento não encontrado</p>
+      <div className="properties-panel">
+        <div className="properties-header">
+          <span className="properties-title">Properties</span>
+        </div>
+        <div className="properties-empty">
+          Tipo de elemento não registrado no registry.
         </div>
       </div>
-    );
+    )
   }
 
-  const selectionCount = selectedIds.length > 0 ? selectedIds.length : 1;
+  const schemaEntries = Object.entries(descriptor.propertySchema || {})
 
   return (
-    <div className="PropertiesPanel-root">
-      {/* Header */}
-      <div className="PropertiesPanel-header">
-        <div className="PropertiesPanel-title">
-          <span>{obj.type}</span>
-          {selectionCount > 1 && (
-            <span className="PropertiesPanel-badge">{selectionCount}</span>
-          )}
+    <div className="properties-panel">
+      <div className="properties-header">
+        <div>
+          <span className="properties-title">Properties</span>
+          <span className="properties-subtitle">
+            {descriptor.label} · {selectedElement.id}
+          </span>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="PropertiesPanel-content">
-        {/* Transform */}
-        <div className="PropertiesPanel-section">
-          <h4>Transformar</h4>
-          <div className="PropertiesPanel-grid">
-            <div className="PropertiesPanel-field">
-              <label>X</label>
-              <input
-                type="number"
-                step="0.1"
-                value={obj.x || obj.x1 || 0}
-                onChange={(e) =>
-                  updateDiagramObject(obj.id, {
-                    [obj.type === "voltage" || obj.type === "current" ? "x1" : "x"]: parseFloat(e.target.value),
-                  })
-                }
-              />
-            </div>
-            <div className="PropertiesPanel-field">
-              <label>Y</label>
-              <input
-                type="number"
-                step="0.1"
-                value={obj.y || obj.y1 || 0}
-                onChange={(e) =>
-                  updateDiagramObject(obj.id, {
-                    [obj.type === "voltage" || obj.type === "current" ? "y1" : "y"]: parseFloat(e.target.value),
-                  })
-                }
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Style */}
-        {!["voltage", "current", "ammeter", "voltmeter"].includes(obj.type) && (
-          <div className="PropertiesPanel-section">
-            <h4>Estilo</h4>
-            <div className="PropertiesPanel-field">
-              <label>Cor</label>
-              <input
-                type="color"
-                value={obj.stroke || obj.fill || "#111827"}
-                onChange={(e) =>
-                  updateDiagramObject(obj.id, {
-                    stroke: e.target.value,
-                  })
-                }
-              />
-            </div>
-            {obj.strokeWidth !== undefined && (
-              <div className="PropertiesPanel-field">
-                <label>Largura</label>
-                <input
-                  type="number"
-                  step="0.5"
-                  value={obj.strokeWidth || 2}
-                  onChange={(e) =>
-                    updateDiagramObject(obj.id, {
-                      strokeWidth: parseFloat(e.target.value),
-                    })
-                  }
-                />
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Circuit Properties */}
-        {["resistor", "capacitor", "inductor"].includes(obj.type) && (
-          <div className="PropertiesPanel-section">
-            <h4>Propriedades</h4>
-            <div className="PropertiesPanel-field">
-              <label>Rótulo</label>
-              <input
-                type="text"
-                value={obj.label || ""}
-                onChange={(e) =>
-                  updateDiagramObject(obj.id, { label: e.target.value })
-                }
-              />
-            </div>
-            <div className="PropertiesPanel-field">
-              <label>Valor</label>
-              <input
-                type="text"
-                value={obj.value || ""}
-                onChange={(e) =>
-                  updateDiagramObject(obj.id, { value: e.target.value })
-                }
-              />
-            </div>
-          </div>
-        )}
+      <div className="properties-body">
+        {schemaEntries.map(([groupKey, groupSchema]) => (
+          <PropertyPanel
+            key={groupKey}
+            groupKey={groupKey}
+            groupSchema={groupSchema}
+            value={selectedElement}
+            onChange={handleChange}
+          />
+        ))}
       </div>
     </div>
-  );
+  )
 }
 
-export default PropertiesPanel;
+export default PropertiesPanel

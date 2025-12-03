@@ -1,0 +1,37 @@
+.canvas-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 4px 8px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.canvas-tab {
+  min-width: 120px;
+  padding: 6px 10px;
+  border-radius: 6px 6px 0 0;
+  border: 1px solid transparent;
+  border-bottom: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.canvas-tab-active {
+  background: #ffffff;
+  border-color: #e5e7eb;
+}
+
+.canvas-tab-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.canvas-tab-subtitle {
+  font-size: 10px;
+  color: #9ca3af;
+}

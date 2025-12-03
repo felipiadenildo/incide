@@ -1,39 +1,74 @@
-import "./LayersPanel.css";
-import { useAppStore } from "../../store/useAppStore.js";
+/**
+ * LayersPanel - Lista de elementos (layers) com seleção básica
+ *
+ * Para v1: lista plana em ordem de z-order.
+ * Futuro: hierarquia / grupos.
+ */
 
-function LayersPanel() {
-  const objects = useAppStore((s) => s.diagramObjects);
-  const selectedId = useAppStore((s) => s.selectedElementId);
-  const setSelectedElementId = useAppStore((s) => s.setSelectedElementId);
+import React from 'react'
+import { useAppStore } from '../../store/useAppStore'
+import './LayersPanel.css'
+
+export function LayersPanel() {
+  const {
+    elements,
+    selectedIds,
+    selectElement,
+    toggleSelection,
+  } = useAppStore((state) => ({
+    elements: state.elements,
+    selectedIds: Array.from(state.selectedIds),
+    selectElement: state.selectElement,
+    toggleSelection: state.toggleSelection,
+  }))
 
   return (
-    <div className="LayersPanel-root">
-      {objects.length === 0 ? (
-        <div className="LayersPanel-empty">
-          <p>Nenhuma camada</p>
-        </div>
-      ) : (
-        <ul className="LayersPanel-list">
-          {objects.map((obj) => (
-            <li
-              key={obj.id}
-              className={`LayersPanel-item ${obj.id === selectedId ? "active" : ""}`}
-              onClick={() => setSelectedElementId(obj.id)}
+    <div className="layers-panel">
+      <div className="layers-header">
+        <span className="layers-title">Layers</span>
+        <span className="layers-count">{elements.length}</span>
+      </div>
+
+      <div className="layers-list">
+        {elements.map((el) => {
+          const isSelected = selectedIds.includes(el.id)
+          return (
+            <button
+              key={el.id}
+              type="button"
+              className={
+                'layers-item' + (isSelected ? ' layers-item-selected' : '')
+              }
+              onClick={(e) => {
+                if (e.shiftKey) {
+                  toggleSelection(el.id)
+                } else {
+                  selectElement(el.id)
+                }
+              }}
+              title={el.id}
             >
-              <span className="LayersPanel-icon">
-                {obj.type === "line" && "—"}
-                {obj.type === "circle" && "◯"}
-                {obj.type === "text" && "T"}
+              <span className="layers-bullet">
+                {el.library === 'circuitikz' ? '⚡' : '⬤'}
               </span>
-              <span className="LayersPanel-label">
-                {obj.type} {obj.id.split("_")[1]}
+              <span className="layers-main">
+                {el.label || el.type}
               </span>
-            </li>
-          ))}
-        </ul>
-      )}
+              <span className="layers-sub">
+                {el.id}
+              </span>
+            </button>
+          )
+        })}
+
+        {elements.length === 0 && (
+          <div className="layers-empty">
+            Nenhum elemento. Use o painel Insert.
+          </div>
+        )}
+      </div>
     </div>
-  );
+  )
 }
 
-export default LayersPanel;
+export default LayersPanel

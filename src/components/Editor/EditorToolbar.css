@@ -1,40 +1,33 @@
-.EditorToolbar-root {
+/* Tabs genéricos usados em CodeEditor e futuros painéis */
+
+.panel-tabs {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  background: var(--color-background);
-  border-bottom: 1px solid var(--color-border);
-  flex-wrap: wrap;
-  min-height: 32px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #ffffff;
 }
 
-.EditorToolbar-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
+.panel-tab {
+  flex: 1;
+  padding: 6px 8px;
+  font-size: 11px;
+  text-align: center;
+  cursor: pointer;
   border: none;
   background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  border-radius: var(--radius-base);
-  font-size: var(--font-size-xs);
-  transition: all var(--transition-fast);
-  white-space: nowrap;
+  color: #6b7280;
+  border-bottom: 2px solid transparent;
+  transition:
+    color 120ms ease,
+    border-color 120ms ease,
+    background 120ms ease;
 }
 
-.EditorToolbar-btn:hover {
-  background: var(--color-secondary-bg);
-  color: var(--color-primary);
+.panel-tab:hover {
+  background: #f3f4f6;
 }
 
-.EditorToolbar-btn:active {
-  transform: scale(0.95);
-}
-
-.EditorToolbar-separator {
-  width: 1px;
-  height: 16px;
-  background: var(--color-border);
+.panel-tab-active {
+  color: #1d4ed8;
+  border-bottom-color: #2563eb;
+  background: #f9fafb;
 }

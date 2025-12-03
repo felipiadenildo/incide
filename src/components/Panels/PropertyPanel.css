@@ -1,0 +1,96 @@
+/* src/components/Panels/PropertyPanel.css */
+
+.property-panel {
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.property-panel-title {
+  padding: 6px 8px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 11px;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.property-panel-body {
+  padding: 6px 8px 4px;
+}
+
+.property-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.property-label {
+  flex: 0 0 60px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.property-input {
+  flex: 1;
+  min-width: 0;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  padding: 2px 4px;
+  font-size: 11px;
+  color: #111827;
+  background: #ffffff;
+}
+
+.property-input:focus {
+  outline: none;
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 1px #bfdbfe;
+}
+
+.property-textarea {
+  flex: 1;
+  min-width: 0;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+  padding: 4px 6px;
+  font-size: 11px;
+  color: #111827;
+  resize: vertical;
+}
+
+.property-textarea:focus {
+  outline: none;
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 1px #bfdbfe;
+}
+
+.color-input {
+  padding: 0;
+  width: 32px;
+  height: 20px;
+}
+
+/* Larguras utilitárias para números (hook retorna essas classes) */
+
+.w-16 {
+  width: 4rem;
+}
+
+.w-24 {
+  width: 6rem;
+}
+
+.w-32 {
+  width: 8rem;
+}
+
+.w-40 {
+  width: 10rem;
+}
