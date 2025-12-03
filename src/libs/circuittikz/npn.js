@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
         const npnDescriptor = {
         id: 'circuittikz:npn',
         library: 'circuittikz',
-        label: 'NPN BJT',
+        type: 'elemento',
+  label: 'NPN BJT',
         category: 'bipole',
         defaults: {
   "x1": 0,
@@ -53,6 +54,8 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(npnDescriptor.id, npnDescriptor);
+        elementRegistry.register(npnDescriptor);
+console.log("✅ npnDescriptor registrado");
+
 
         export default npnDescriptor;

@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
         const opamp = {
         id: 'circuittikz:opamp',
         library: 'circuittikz',
-        label: 'Op-Amp',
+        type: 'elemento',
+  label: 'Op-Amp',
         category: 'bipole',
         defaults: {
   "x1": 0,
@@ -55,4 +56,6 @@ import { elementRegistry } from '../elementRegistry.js';
 
         export default opamp;
 
-        elementRegistry.register(opamp.id, opamp);
+        elementRegistry.register(opamp);
+console.log("✅ opamp registrado");
+

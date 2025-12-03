@@ -3,6 +3,7 @@ import { elementRegistry } from '../elementRegistry.js';
 const rectangle = {
   id: 'tikz:rectangle',
   library: 'tikz',
+  type: 'elemento',
   label: 'Rectangle',
   category: 'shape',
   defaults: {
@@ -86,6 +87,8 @@ codeGenerator(element) {
   }
 };
 
-elementRegistry.register('tikz:rectangle', rectangle);
+elementRegistry.register(rectangle);
+console.log("✅ rectangle registrado");
+
 export default rectangle;
 

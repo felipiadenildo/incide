@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
         const exportDefaultObject = {
         id: 'circuittikz:euroresistor',
         library: 'circuittikz',
-        label: 'Euro Resistor',
+        type: 'elemento',
+  label: 'Euro Resistor',
         category: 'bipole',
         defaults: {
   "x1": 0,
@@ -53,6 +54,8 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register('circuittikz:euroresistor', exportDefaultObject);
+        elementRegistry.register(exportDefaultObject);
+console.log("✅ exportDefaultObject registrado");
+
 
         export default exportDefaultObject;

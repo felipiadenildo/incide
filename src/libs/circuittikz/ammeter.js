@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
         const ammeter = {
         id: 'circuittikz:ammeter',
         library: 'circuittikz',
-        label: 'Ammeter',
+        type: 'elemento',
+  label: 'Ammeter',
         category: 'bipole',
         defaults: {
   "x1": 0,
@@ -54,5 +55,7 @@ import { elementRegistry } from '../elementRegistry.js';
         };
 
         elementRegistry.register(ammeter);
+console.log("✅ ammeter registrado");
+
 
         export default ammeter;

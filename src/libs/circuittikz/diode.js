@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
 const descriptor = {
     id: 'circuittikz:diode',
     library: 'circuittikz',
-    label: 'Diode',
+    type: 'elemento',
+  label: 'Diode',
     category: 'bipole',
     defaults: {
         "x1": 0,

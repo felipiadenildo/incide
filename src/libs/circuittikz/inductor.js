@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
         const inductor = {
         id: 'circuittikz:inductor',
         library: 'circuittikz',
-        label: 'Inductor',
+        type: 'elemento',
+  label: 'Inductor',
         category: 'bipole',
         defaults: {
   "x1": 0,
@@ -54,6 +55,8 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(inductor.id, inductor);
+        elementRegistry.register(inductor);
+console.log("✅ inductor registrado");
+
 
         export default inductor;

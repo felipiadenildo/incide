@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
         const descriptor = {
         id: 'circuittikz:voltmeter',
         library: 'circuittikz',
-        label: 'Voltmeter',
+        type: 'elemento',
+  label: 'Voltmeter',
         category: 'bipole',
         defaults: {
   "x1": 0,

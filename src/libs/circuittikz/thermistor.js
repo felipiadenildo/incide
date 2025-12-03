@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
         const thermistor = {
         id: 'circuittikz:thermistor',
         library: 'circuittikz',
-        label: 'Thermistor',
+        type: 'elemento',
+  label: 'Thermistor',
         category: 'bipole',
         defaults: {
   "x1": 0,
@@ -56,4 +57,6 @@ import { elementRegistry } from '../elementRegistry.js';
 
         export default thermistor;
 
-        elementRegistry.register(thermistor.id, thermistor);
+        elementRegistry.register(thermistor);
+console.log("✅ thermistor registrado");
+

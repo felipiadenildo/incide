@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
 const descriptor = {
     id: 'circuittikz:switch_open',
     library: 'circuittikz',
-    label: 'Switch (Open)',
+    type: 'elemento',
+  label: 'Switch (Open)',
     category: 'bipole',
     defaults: {
         "x1": 0,

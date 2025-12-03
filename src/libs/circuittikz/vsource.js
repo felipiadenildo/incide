@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
         const vsource = {
         id: 'circuittikz:vsource',
         library: 'circuittikz',
-        label: 'Voltage Source',
+        type: 'elemento',
+  label: 'Voltage Source',
         category: 'bipole',
         defaults: {
   "x1": 0,
@@ -54,6 +55,8 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register('circuittikz:vsource', vsource);
+        elementRegistry.register(vsource);
+console.log("✅ vsource registrado");
+
 
         export default vsource;

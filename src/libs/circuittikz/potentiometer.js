@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
 const potentiometer = {
     id: 'circuittikz:potentiometer',
     library: 'circuittikz',
-    label: 'Potentiometer',
+    type: 'elemento',
+  label: 'Potentiometer',
     category: 'bipole',
     defaults: {
         "x1": 0,
@@ -55,4 +56,6 @@ const potentiometer = {
 
 export default potentiometer;
 
-elementRegistry.register(potentiometer.id, potentiometer);
+elementRegistry.register(potentiometer);
+console.log("✅ potentiometer registrado");
+

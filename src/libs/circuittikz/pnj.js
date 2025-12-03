@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
         const pnjDescriptor = {
         id: 'circuittikz:pnj',
         library: 'circuittikz',
-        label: 'PNP BJT',
+        type: 'elemento',
+  label: 'PNP BJT',
         category: 'bipole',
         defaults: {
   "x1": 0,
@@ -53,6 +54,8 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register('circuittikz:pnj', pnjDescriptor);
+        elementRegistry.register(pnjDescriptor);
+console.log("✅ pnjDescriptor registrado");
+
 
         export default pnjDescriptor;

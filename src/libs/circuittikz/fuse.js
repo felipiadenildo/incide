@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
         const fuseElement = {
         id: 'circuittikz:fuse',
         library: 'circuittikz',
-        label: 'Fuse',
+        type: 'elemento',
+  label: 'Fuse',
         category: 'bipole',
         defaults: {
   "x1": 0,
@@ -53,6 +54,8 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register('circuittikz:fuse', fuseElement);
+        elementRegistry.register(fuseElement);
+console.log("✅ fuseElement registrado");
+
 
         export default fuseElement;

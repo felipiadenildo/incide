@@ -3,6 +3,7 @@ import { elementRegistry } from '../elementRegistry.js';
 const circle = {
   id: 'tikz:circle',
   library: 'tikz',
+  type: 'elemento',
   label: 'Circle',
   category: 'shape',
   defaults: {
@@ -86,6 +87,8 @@ const circle = {
   }
 };
 
-elementRegistry.register('tikz:circle', circle);
+elementRegistry.register(circle);
+console.log("✅ circle registrado");
+
 
 export default circle;

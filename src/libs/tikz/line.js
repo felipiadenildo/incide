@@ -3,6 +3,7 @@ import { elementRegistry } from '../elementRegistry.js';
 const line = {
   id: 'tikz:line',
   library: 'tikz',
+  type: 'elemento',
   label: 'Line',
   category: 'shape',
   defaults: {
@@ -92,6 +93,8 @@ const line = {
   }
 };
 
-elementRegistry.register('tikz:line', line);
+elementRegistry.register(line);
+console.log("✅ line registrado");
+
 
 export default line;

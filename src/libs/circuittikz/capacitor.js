@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
 const capacitor = {
     id: 'circuittikz:capacitor',
     library: 'circuittikz',
-    label: 'Capacitor',
+    type: 'elemento',
+  label: 'Capacitor',
     category: 'bipole',
     defaults: {
         "x1": 0,
@@ -54,6 +55,8 @@ const capacitor = {
     }
 };
 
-elementRegistry.register(capacitor.id, capacitor);
+elementRegistry.register(capacitor);
+console.log("✅ capacitor registrado");
+
 
 export default capacitor;

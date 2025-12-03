@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
         const usResistor = {
         id: 'circuittikz:usresistor',
         library: 'circuittikz',
-        label: 'US Resistor',
+        type: 'elemento',
+  label: 'US Resistor',
         category: 'bipole',
         defaults: {
   "x1": 0,
@@ -53,6 +54,8 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register('circuittikz:usresistor', usResistor);
+        elementRegistry.register(usResistor);
+console.log("✅ usResistor registrado");
+
 
         export default usResistor;

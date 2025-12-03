@@ -1,150 +1,65 @@
-/**
- * PropertiesPanel - Painel de propriedades do elemento selecionado
- *
- * CORREÇÃO: Console.log para debug e useMemo otimizado
- */
-
-import React, { useMemo, useCallback } from 'react'
-import { useAppStore } from '../../store/useAppStore'
-import { elementRegistry } from '../../libs/elementRegistry'
-import { PropertyPanel } from './PropertyPanel'
-import './PropertiesPanel.css'
+import React from 'react';
+import { useAppStore } from '../../store/useAppStore';
+import { elementRegistry } from '../../libs/elementRegistry';
+import { PropertyPanel } from './PropertyPanel';
+import './PropertiesPanel.css';
 
 export function PropertiesPanel() {
+  const selectedIds = useAppStore((state) => state.selectedElementIds);
   const elements = useAppStore((state) => state.elements);
-  const selectedIdsSet = useAppStore((state) => state.selectedIds);
   const updateElement = useAppStore((state) => state.updateElement);
 
-  // 🔥 Memoizar conversão Set → Array
-  const selectedIds = useMemo(() => Array.from(selectedIdsSet), [selectedIdsSet]);
+  // Elemento selecionado
+  const selectedElement = elements.find(el => selectedIds.includes(el.id));
 
-  console.log("[PropertiesPanel] render", {
-    selectedCount: selectedIds.length,
-    elementsCount: elements.length,
-  });
-
-  // 🔥 Memoizar elemento selecionado com dependências específicas
-  const selectedElement = useMemo(() => {
-    if (selectedIds.length !== 1) {
-      console.log("[PropertiesPanel] no single selection");
-      return null;
-    }
-    const elem = elements.find((e) => e.id === selectedIds[0]) || null;
-    console.log("[PropertiesPanel] selectedElement", elem?.id);
-    return elem;
-  }, [elements, selectedIds]);
-
-  const descriptor = useMemo(() => {
-    if (!selectedElement) return null
-    try {
-      const desc = elementRegistry.get(selectedElement.type);
-      console.log("[PropertiesPanel] descriptor loaded", desc?.id);
-      return desc;
-    } catch {
-      console.error("[PropertiesPanel] descriptor not found for", selectedElement.type);
-      return null
-    }
-  }, [selectedElement]);
-
-  const handleChange = useCallback(
-    (groupKey, propKey, nextValue) => {
-      if (!selectedElement || !descriptor) {
-        console.log("[PropertiesPanel] handleChange blocked, no selection");
-        return;
-      }
-
-      console.log("[PropertiesPanel] handleChange", { 
-        id: selectedElement.id, 
-        groupKey, 
-        propKey, 
-        nextValue 
-      });
-
-      const next = { ...selectedElement }
-
-      if (!next[groupKey]) {
-        next[groupKey] = {}
-      }
-
-      // Estratégia simples: propriedades planas no elemento
-      if (groupKey === 'positioning' || groupKey === 'shape' || groupKey === 'appearance' || groupKey === 'component') {
-        next[propKey] = nextValue
-      }
-
-      updateElement(selectedElement.id, next)
-    },
-    [selectedElement, descriptor, updateElement]
-  )
-
-  // Estados de UI
-  if (selectedIds.length === 0) {
+  if (!selectedElement) {
     return (
       <div className="properties-panel">
-        <div className="properties-header">
-          <span className="properties-title">Properties</span>
-        </div>
+        <div className="properties-header">Properties</div>
         <div className="properties-empty">
-          Selecione um elemento no canvas para editar as propriedades.
+          Nenhum elemento selecionado
         </div>
       </div>
-    )
+    );
   }
 
-  if (selectedIds.length > 1) {
+  // Descriptor do elemento
+  const descriptor = elementRegistry.get(selectedElement.type);
+  if (!descriptor?.propertySchema) {
     return (
       <div className="properties-panel">
-        <div className="properties-header">
-          <span className="properties-title">Properties</span>
-          <span className="properties-subtitle">
-            {selectedIds.length} elementos selecionados
-          </span>
-        </div>
+        <div className="properties-header">Properties</div>
         <div className="properties-empty">
-          Edição em grupo será adicionada depois. Por enquanto, selecione apenas um elemento.
+          Sem propriedades editáveis
         </div>
       </div>
-    )
+    );
   }
 
-  if (!selectedElement || !descriptor) {
-    return (
-      <div className="properties-panel">
-        <div className="properties-header">
-          <span className="properties-title">Properties</span>
-        </div>
-        <div className="properties-empty">
-          Tipo de elemento não registrado no registry.
-        </div>
-      </div>
-    )
-  }
-
-  const schemaEntries = Object.entries(descriptor.propertySchema || {})
+  const handleChange = (propKey, value) => {
+    updateElement(selectedElement.id, { [propKey]: value });
+  };
 
   return (
     <div className="properties-panel">
       <div className="properties-header">
-        <div>
-          <span className="properties-title">Properties</span>
-          <span className="properties-subtitle">
-            {descriptor.label} · {selectedElement.id}
-          </span>
-        </div>
+        Properties - {descriptor.label}
       </div>
-
       <div className="properties-body">
-        {schemaEntries.map(([groupKey, groupSchema]) => (
-          <PropertyPanel
-            key={groupKey}
-            groupKey={groupKey}
-            groupSchema={groupSchema}
-            value={selectedElement}
-            onChange={handleChange}
-          />
-        ))}
+        {Object.entries(descriptor.propertySchema).map(([groupKey, groupSchema]) => {
+          if (groupKey === 'label') return null;
+          
+          return (
+            <PropertyPanel
+              key={groupKey}
+              groupKey={groupKey}
+              groupSchema={groupSchema}
+              element={selectedElement}
+              onChange={handleChange}
+            />
+          );
+        })}
       </div>
     </div>
-  )
+  );
 }
-
-export default PropertiesPanel

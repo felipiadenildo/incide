@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
         const zener = {
         id: 'circuittikz:zener',
         library: 'circuittikz',
-        label: 'Zener Diode',
+        type: 'elemento',
+  label: 'Zener Diode',
         category: 'bipole',
         defaults: {
   "x1": 0,
@@ -54,6 +55,9 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(zener.id, zener);
+        console.log('✅ ${{window.location.pathname.includes("tikz") ? "tikz" : "circuittikz"}}:${os.path.basename(filepath).replace(".js", "")} registrado');
+elementRegistry.register(zener);
+console.log("✅ zener registrado");
+
 
         export default zener;

@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
         const ground = {
         id: 'circuittikz:ground',
         library: 'circuittikz',
-        label: 'Ground',
+        type: 'elemento',
+  label: 'Ground',
         category: 'bipole',
         defaults: {
   "x": 1,
@@ -59,6 +60,8 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(ground.id, ground);
+        elementRegistry.register(ground);
+console.log("✅ ground registrado");
+
 
         export default ground;

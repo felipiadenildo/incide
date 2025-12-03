@@ -3,6 +3,7 @@ import { elementRegistry } from '../elementRegistry.js';
 const node = {
   id: 'tikz:node',
   library: 'tikz',
+  type: 'elemento',
   label: 'Node',
   category: 'shape',
   defaults: {
@@ -94,6 +95,8 @@ codeGenerator(element) {
   }
 };
 
-elementRegistry.register('tikz:node', node);
+elementRegistry.register(node);
+console.log("✅ node registrado");
+
 
 export default node;

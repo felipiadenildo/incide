@@ -3,6 +3,7 @@ import { elementRegistry } from '../elementRegistry.js';
 const ellipse = {
   id: 'tikz:ellipse',
   library: 'tikz',
+  type: 'elemento',
   label: 'Ellipse',
   category: 'shape',
   defaults: {
@@ -85,6 +86,8 @@ const ellipse = {
   }
 };
 
-elementRegistry.register('tikz:ellipse', ellipse);
+elementRegistry.register(ellipse);
+console.log("✅ ellipse registrado");
+
 
 export default ellipse;

@@ -67,3 +67,5 @@ export function parseTikzCode(code) {
 
   return objects;
 }
+
+export default descriptor;

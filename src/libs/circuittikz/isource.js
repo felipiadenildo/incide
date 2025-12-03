@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
         const isource = {
         id: 'circuittikz:isource',
         library: 'circuittikz',
-        label: 'Current Source',
+        type: 'elemento',
+  label: 'Current Source',
         category: 'bipole',
         defaults: {
   "x1": 0,
@@ -55,4 +56,6 @@ import { elementRegistry } from '../elementRegistry.js';
         };
 
         elementRegistry.register(isource);
+console.log("✅ isource registrado");
+
         export default isource;

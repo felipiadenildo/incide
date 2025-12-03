@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
         const relaySpdt = {
         id: 'circuittikz:relay_spdt',
         library: 'circuittikz',
-        label: 'Relay SPDT',
+        type: 'elemento',
+  label: 'Relay SPDT',
         category: 'bipole',
         defaults: {
   "x1": 0,
@@ -55,4 +56,6 @@ import { elementRegistry } from '../elementRegistry.js';
 
         export default relaySpdt;
 
-        elementRegistry.register(relaySpdt.id, relaySpdt);
+        elementRegistry.register(relaySpdt);
+console.log("✅ relaySpdt registrado");
+

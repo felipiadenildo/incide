@@ -30,6 +30,14 @@ const SVGElement = memo(({ elem, isSelected, zoom, onSelect, onToggleSelect }) =
       }
     }
 
+    // LINHA ~34 - PROTEÇÃO CRÍTICA
+    const renderProps = descriptor?.svgRender?.(element, isSelected, zoom);
+    if (!renderProps || !renderProps.tag) {
+      console.error(`❌ svgRender inválido para '${element.type}':`, renderProps);
+      return <rect x={0} y={0} width={20} height={20} fill="#ff4444" stroke="#ff0000" />;
+    }
+
+
     // Suporte a descriptor que retorna <g> com children virtuais
     if (svgProps.tag === 'g' && Array.isArray(svgProps.children)) {
       const { children, ...groupProps } = svgProps

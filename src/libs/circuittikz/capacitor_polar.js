@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
         const capacitorPolar = {
         id: 'circuittikz:capacitor_polar',
         library: 'circuittikz',
-        label: 'Capacitor Polarizado',
+        type: 'elemento',
+  label: 'Capacitor Polarizado',
         category: 'bipole',
         defaults: {
   "x1": 0,
@@ -54,6 +55,8 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register('circuittikz:capacitor_polar', capacitorPolar);
+        elementRegistry.register(capacitorPolar);
+console.log("✅ capacitorPolar registrado");
+
 
         export default capacitorPolar;

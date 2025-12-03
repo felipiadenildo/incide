@@ -1,96 +1,115 @@
-/* src/components/Panels/PropertyPanel.css */
-
-.property-panel {
-  border-radius: 6px;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
-  margin-bottom: 8px;
-  overflow: hidden;
+.property-panel-empty {
+  padding: 20px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
 }
 
-.property-panel-title {
-  padding: 6px 8px;
+.property-panel-group {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.property-panel-group-header {
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 13px;
   background: #f9fafb;
   border-bottom: 1px solid #e5e7eb;
-  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #374151;
+}
+
+.property-panel-group-body {
+  padding: 12px 16px;
+}
+
+/* Campo individual */
+.property-field {
+  margin-bottom: 16px;
+}
+
+.property-field-label {
+  display: block;
+  font-size: 12px;
   font-weight: 500;
   color: #6b7280;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  margin-bottom: 6px;
 }
 
-.property-panel-body {
-  padding: 6px 8px 4px;
+/* Inputs */
+.property-field-input,
+.property-field-select,
+.property-field-textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  transition: border-color 0.15s;
 }
 
-.property-row {
+.property-field-input:focus,
+.property-field-select:focus,
+.property-field-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.property-field-input.error {
+  border-color: #ef4444;
+}
+
+/* Color picker */
+.property-field-color {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
-  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.property-label {
-  flex: 0 0 60px;
-  font-size: 11px;
-  color: #6b7280;
+.property-field-color-picker {
+  width: 50px;
+  height: 36px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 2px;
 }
 
-.property-input {
+.property-field-color-text {
   flex: 1;
-  min-width: 0;
-  border-radius: 4px;
-  border: 1px solid #e5e7eb;
-  padding: 2px 4px;
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: 'Monaco', monospace;
+}
+
+/* Error */
+.property-field-error {
+  margin-top: 4px;
   font-size: 11px;
-  color: #111827;
-  background: #ffffff;
+  color: #ef4444;
 }
 
-.property-input:focus {
-  outline: none;
-  border-color: #93c5fd;
-  box-shadow: 0 0 0 1px #bfdbfe;
-}
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .property-panel-group-header {
+    background: #1f2937;
+    border-color: #374151;
+    color: #d1d5db;
+  }
 
-.property-textarea {
-  flex: 1;
-  min-width: 0;
-  border-radius: 4px;
-  border: 1px solid #e5e7eb;
-  padding: 4px 6px;
-  font-size: 11px;
-  color: #111827;
-  resize: vertical;
-}
+  .property-field-label {
+    color: #9ca3af;
+  }
 
-.property-textarea:focus {
-  outline: none;
-  border-color: #93c5fd;
-  box-shadow: 0 0 0 1px #bfdbfe;
-}
-
-.color-input {
-  padding: 0;
-  width: 32px;
-  height: 20px;
-}
-
-/* Larguras utilitárias para números (hook retorna essas classes) */
-
-.w-16 {
-  width: 4rem;
-}
-
-.w-24 {
-  width: 6rem;
-}
-
-.w-32 {
-  width: 8rem;
-}
-
-.w-40 {
-  width: 10rem;
+  .property-field-input,
+  .property-field-select,
+  .property-field-textarea {
+    background: #1f2937;
+    border-color: #374151;
+    color: #f3f4f6;
+  }
 }

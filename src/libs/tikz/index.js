@@ -1,10 +1,7 @@
-/**
- * TikZ Library - Inicialização
- */
+import "./circle.js";
+import "./rectangle.js";
+import "./ellipse.js";
+import "./line.js";
+import "./node.js";
 
-import { registerTikZShapes } from './elements/shapes'
-
-// Registrar ao importar
-registerTikZShapes()
-
-console.log('[TikZ] Library inicializada')
+console.log("[TikZ] 5 elementos carregados");

@@ -3,7 +3,8 @@ import { elementRegistry } from '../elementRegistry.js';
         const ohmmeter = {
         id: 'circuittikz:ohmmeter',
         library: 'circuittikz',
-        label: 'Ohmmeter',
+        type: 'elemento',
+  label: 'Ohmmeter',
         category: 'bipole',
         defaults: {
   "x1": 0,
@@ -53,6 +54,8 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(ohmmeter.id, ohmmeter);
+        elementRegistry.register(ohmmeter);
+console.log("✅ ohmmeter registrado");
+
 
         export default ohmmeter;
