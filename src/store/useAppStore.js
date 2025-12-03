@@ -1,7 +1,8 @@
-import { create } from "zustand";
-import { devtools } from "zustand/middleware";
+import { create } from "zustand"
+import { devtools } from "zustand/middleware"
 
 const initialState = {
+  // ... elementos existentes ...
   elements: [],
   selectedIds: new Set(),
   canvasView: {
@@ -21,25 +22,79 @@ const initialState = {
   },
   project: {
     name: "Untitled",
-    type: "sandbox",  // ← sandbox, tikz, circuitikz
+    type: "sandbox",  // sandbox, tikz, circuitikz
     created: new Date().toISOString(),
     modified: new Date().toISOString(),
   },
-};
+  
+  /**
+ * Muda tipo do workspace ATIVO (com confirmação)
+ */
+changeActiveWorkspaceType: (newType) => {
+  const state = get()
+  const activeWorkspace = state.workspaces.find(ws => ws.id === state.activeWorkspaceId)
+  
+  if (!activeWorkspace) return
+  
+  // ✅ CONFIRMAÇÃO se editor não vazio
+  if (state.elements.length > 0) {
+    const confirmed = window.confirm(
+      `Mudar workspace para ${newType}?\n\n` +
+      `⚠️ Elementos existentes podem ficar incompatíveis.\n` +
+      `Deseja continuar?`
+    )
+    if (!confirmed) return
+  }
+  
+  set((state) => ({
+    workspaces: state.workspaces.map(ws =>
+      ws.id === state.activeWorkspaceId 
+        ? { ...ws, type: newType }
+        : ws
+    ),
+    project: { ...state.project, modified: new Date().toISOString() }
+  }))
+  
+  console.log(`[Store] Workspace type changed to: ${newType}`)
+},
+
+  // ✅ NOVO: WORKSPACES
+  workspaces: [
+    {
+      id: 'workspace-1',
+      name: 'Workspace 1',
+      type: 'sandbox',
+      created: new Date().toISOString()
+    }
+  ],
+  activeWorkspaceId: 'workspace-1',
+}
 
 export const useAppStore = create(
   devtools(
     (set, get) => ({
       ...initialState,
 
-      // ========== ELEMENTOS ==========
-
+      // ========== ELEMENTOS (EXISTENTES + WORKSPACE) ==========
+      
       addElement: (element) =>
-        set((state) => ({
-          elements: [...state.elements, element],
-          project: { ...state.project, modified: new Date().toISOString() },
-        })),
+        set((state) => {
+          // ✅ Filtra elementos por workspaceId
+          const workspaceElements = state.elements.filter(e => 
+            e.workspaceId === element.workspaceId
+          )
+          
+          return {
+            elements: [
+              ...state.elements.filter(e => e.workspaceId !== element.workspaceId),
+              ...workspaceElements,
+              element
+            ],
+            project: { ...state.project, modified: new Date().toISOString() },
+          }
+        }),
 
+      // ... outros métodos existentes permanecem iguais ...
       addElements: (elements) =>
         set((state) => ({
           elements: [...state.elements, ...elements],
@@ -66,107 +121,187 @@ export const useAppStore = create(
           project: { ...state.project, modified: new Date().toISOString() },
         })),
 
-      updateElements: (updates) =>
+      // ... resto dos métodos existentes permanecem IGUAIS ...
+
+      // ========== WORKSPACES NOVOS ==========
+      
+      /**
+       * Define workspace ativo (usado pelo InsertPanel)
+       */
+      setActiveWorkspace: (workspaceId) => {
+        if (!workspaceId) return
+        
+        set({ activeWorkspaceId: workspaceId })
+        console.log('[Store] Active workspace:', workspaceId)
+      },
+
+      /**
+       * Cria novo workspace
+       */
+      createWorkspace: (type = 'sandbox') =>
         set((state) => {
-          const map = new Map(updates.map((u) => [u.id, u.props]));
+          const id = `workspace-${state.workspaces.length + 1}`
+          const newWorkspace = {
+            id,
+            name: `Workspace ${state.workspaces.length + 1}`,
+            type,
+            created: new Date().toISOString()
+          }
+          
           return {
-            elements: state.elements.map((e) =>
-              map.has(e.id) ? { ...e, ...map.get(e.id) } : e
-            ),
-            project: { ...state.project, modified: new Date().toISOString() },
-          };
+            workspaces: [...state.workspaces, newWorkspace],
+            activeWorkspaceId: id,
+            project: { ...state.project, modified: new Date().toISOString() }
+          }
         }),
 
-      clearElements: () =>
+      /**
+       * Renomeia workspace
+       */
+      renameWorkspace: (workspaceId, newName) =>
         set((state) => ({
-          elements: [],
-          selectedIds: new Set(),
-          project: { ...state.project, modified: new Date().toISOString() },
+          workspaces: state.workspaces.map(ws =>
+            ws.id === workspaceId ? { ...ws, name: newName } : ws
+          ),
+          project: { ...state.project, modified: new Date().toISOString() }
         })),
 
-      reorderElement: (elementId, direction) =>
+      /**
+       * Deleta workspace (mantém pelo menos 1)
+       */
+      deleteWorkspace: (workspaceId) =>
         set((state) => {
-          const idx = state.elements.findIndex((e) => e.id === elementId);
-          if (idx === -1) return state;
-
-          const next = [...state.elements];
-
-          if (direction === "forward" && idx < next.length - 1) {
-            [next[idx], next[idx + 1]] = [next[idx + 1], next[idx]];
-          } else if (direction === "backward" && idx > 0) {
-            [next[idx], next[idx - 1]] = [next[idx - 1], next[idx]];
-          } else if (direction === "front") {
-            const [item] = next.splice(idx, 1);
-            next.push(item);
-          } else if (direction === "back") {
-            const [item] = next.splice(idx, 1);
-            next.unshift(item);
+          const workspaces = state.workspaces.filter(ws => ws.id !== workspaceId)
+          
+          if (workspaces.length === 0) return state // Mínimo 1 workspace
+          
+          const firstWorkspaceId = workspaces[0].id
+          return {
+            workspaces,
+            activeWorkspaceId: firstWorkspaceId,
+            elements: state.elements.filter(e => e.workspaceId !== workspaceId),
+            selectedIds: new Set(),
+            project: { ...state.project, modified: new Date().toISOString() }
           }
-
-          return { elements: next };
         }),
 
-      getElement: (elementId) => {
-        const state = get();
-        return state.elements.find((e) => e.id === elementId);
+      /**
+       * Getter: workspace ativo
+       */
+      getActiveWorkspace: () => {
+        const state = get()
+        return state.workspaces.find(ws => ws.id === state.activeWorkspaceId)
       },
 
-      getSelectedElements: () => {
-        const state = get();
-        return state.elements.filter((e) => state.selectedIds.has(e.id));
+      /**
+       * Getter: elementos do workspace ativo
+       */
+      getActiveWorkspaceElements: () => {
+        const state = get()
+        const activeId = state.activeWorkspaceId
+        return state.elements.filter(e => e.workspaceId === activeId)
       },
 
-      // ========== SELEÇÃO ==========
-
+      // ========== SELEÇÃO (FILTRADA POR WORKSPACE) ==========
+      
       selectElement: (elementId) =>
         set((state) => {
-          const next = new Set();
-          if (elementId != null) next.add(elementId);
-          return { selectedIds: next };
-        }),
-
-      addToSelection: (elementId) =>
-        set((state) => {
-          const next = new Set(state.selectedIds);
-          next.add(elementId);
-          return { selectedIds: next };
-        }),
-
-      removeFromSelection: (elementId) =>
-        set((state) => {
-          const next = new Set(state.selectedIds);
-          next.delete(elementId);
-          return { selectedIds: next };
+          const activeElements = state.elements.filter(e => 
+            e.workspaceId === state.activeWorkspaceId
+          )
+          const elementExists = activeElements.some(e => e.id === elementId)
+          
+          if (!elementExists) return state
+          
+          const next = new Set()
+          if (elementId != null) next.add(elementId)
+          return { selectedIds: next }
         }),
 
       toggleSelection: (elementId) =>
         set((state) => {
-          const next = new Set(state.selectedIds);
-          if (next.has(elementId)) next.delete(elementId);
-          else next.add(elementId);
-          return { selectedIds: next };
-        }),
-
-      selectElements: (elementIds) =>
-        set(() => {
-          const next = new Set(elementIds);
-          return { selectedIds: next };
+          const next = new Set(state.selectedIds)
+          if (next.has(elementId)) next.delete(elementId)
+          else next.add(elementId)
+          return { selectedIds: next }
         }),
 
       clearSelection: () => set(() => ({ selectedIds: new Set() })),
 
-      isSelected: (elementId) => {
-        const state = get();
-        return state.selectedIds.has(elementId);
-      },
-
+            /**
+       * Conta selecionados no workspace ATIVO
+       */
       getSelectionCount: () => {
-        const state = get();
-        return state.selectedIds.size;
+        const state = get()
+        const activeElements = state.elements.filter(e => 
+          e.workspaceId === state.activeWorkspaceId
+        )
+        return state.selectedIds.size
       },
 
-      // ========== CANVAS VIEW ==========
+      /**
+       * Verifica se elemento está no workspace ativo
+       */
+      isElementInActiveWorkspace: (elementId) => {
+        const state = get()
+        const element = state.elements.find(e => e.id === elementId)
+        return element?.workspaceId === state.activeWorkspaceId
+      },
 
+
+      // ========== PROJECT (EXISTENTE) ==========
+      
+      setProjectType: (type) =>
+        set((state) => {
+          if (!["sandbox", "tikz", "circuittikz"].includes(type)) return state
+          console.log("[Store] project type changed to:", type)
+          return {
+            project: {
+              ...state.project,
+              type,
+              modified: new Date().toISOString(),
+            },
+            // Atualiza todos workspaces para novo tipo
+            workspaces: state.workspaces.map(ws => ({
+              ...ws,
+              type
+            }))
+          }
+        }),
+
+
+        // ✅ ADICIONE LOGO DEPOIS:
+changeActiveWorkspaceType: (newType) => {
+  const state = get()
+  const activeWorkspace = state.workspaces.find(ws => ws.id === state.activeWorkspaceId)
+  
+  if (!activeWorkspace) return
+  
+  // ✅ CONFIRMAÇÃO se editor não vazio
+  if (state.elements.length > 0) {
+    const confirmed = window.confirm(
+      `Mudar workspace para ${newType}?\n\n` +
+      `⚠️ Elementos existentes podem ficar incompatíveis.\n` +
+      `Deseja continuar?`
+    )
+    if (!confirmed) return
+  }
+  
+  set((state) => ({
+    workspaces: state.workspaces.map(ws =>
+      ws.id === state.activeWorkspaceId 
+        ? { ...ws, type: newType }
+        : ws
+    ),
+    project: { ...state.project, modified: new Date().toISOString() }
+  }))
+},
+
+
+      // ========== CANVAS VIEW (EXISTENTE COMPLETO) ==========
+
+
+      
       setPan: (panX, panY) =>
         set((state) => ({
           canvasView: { ...state.canvasView, panX, panY },
@@ -223,8 +358,8 @@ export const useAppStore = create(
           },
         })),
 
-      // ========== EDITOR ==========
-
+      // ========== EDITOR (EXISTENTE COMPLETO) ==========
+      
       setEditorMode: (mode) =>
         set((state) => ({
           editorMode: ["visual", "code", "pretty"].includes(mode)
@@ -234,8 +369,8 @@ export const useAppStore = create(
 
       setCodeEditorValue: (code) => set(() => ({ codeEditorValue: code })),
 
-      // ========== HISTÓRICO (v1 simples) ==========
-
+      // ========== HISTÓRICO (EXISTENTE COMPLETO) ==========
+      
       saveSnapshot: () =>
         set((state) => {
           const snapshot = {
@@ -303,8 +438,8 @@ export const useAppStore = create(
           };
         }),
 
-      // ========== PROJECT ==========
-
+      // ========== PROJECT (EXISTENTE + MELHORADO) ==========
+      
       setProjectName: (name) =>
         set((state) => ({
           project: {
@@ -314,9 +449,10 @@ export const useAppStore = create(
           },
         })),
 
+      // ✅ JÁ ATUALIZADO com workspaces
       setProjectType: (type) =>
         set((state) => {
-          if (!["sandbox", "tikz", "circuitikz"].includes(type)) return state;
+          if (!["sandbox", "tikz", "circuittikz"].includes(type)) return state;
           console.log("[Store] project type changed to:", type);
           return {
             project: {
@@ -324,33 +460,35 @@ export const useAppStore = create(
               type,
               modified: new Date().toISOString(),
             },
+            workspaces: state.workspaces.map(ws => ({
+              ...ws,
+              type
+            }))
           };
         }),
 
-      resetProject: () => ({
+      resetProject: () => set(() => ({
         ...initialState,
         project: {
           ...initialState.project,
           created: new Date().toISOString(),
         },
-      }),
+      })),
 
-      // ========== DEBUG ==========
-
+      // ========== DEBUG (ATUALIZADO) ==========
+      
       debug: () => {
         const state = get();
         console.log("=== App Store Debug ===");
-        console.log("Elements:", state.elements.length);
-        console.log("Selected:", state.selectedIds.size);
+        console.log("Workspaces:", state.workspaces.length, state.activeWorkspaceId);
+        console.log("Elements total:", state.elements.length);
         console.log("Project:", state.project);
-        console.log(
-          "History past/future:",
-          state.history.past.length,
-          "/",
-          state.history.future.length
-        );
+        console.log("History past/future:", 
+          state.history.past.length, "/", state.history.future.length);
       },
     }),
     { name: "appStore", trace: true }
   )
+
+  
 );

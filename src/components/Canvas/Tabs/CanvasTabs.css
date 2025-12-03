@@ -1,86 +1,122 @@
 .canvas-tabs {
+  padding: 8px 12px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  min-height: 48px;
+}
+
+.canvas-tab-group {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 4px;
-  padding: 4px 8px;
-  background: #f9fafb;
-  border-top: 1px solid #e5e7eb;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+.canvas-tab-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  position: relative;
 }
 
 .canvas-tab {
-  min-width: 120px;
-  padding: 6px 10px;
-  border-radius: 6px 6px 0 0;
-  border: 1px solid transparent;
-  border-bottom: none;
-  background: transparent;
-  cursor: pointer;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.canvas-tab-active {
-  background: #ffffff;
-  border-color: #e5e7eb;
-}
-
-.canvas-tab-title {
-  font-size: 12px;
-  font-weight: 500;
-  color: #111827;
-}
-
-.canvas-tab-subtitle {
-  font-size: 10px;
-  color: #9ca3af;
-}
-/* Dropdown para tipos de projeto */
-.canvas-tab-dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-menu {
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  min-width: 140px;
-  z-index: 1000;
-  margin-bottom: 4px;
-}
-
-.dropdown-item {
-  display: block;
-  width: 100%;
+  align-items: center;
+  gap: 6px;
   padding: 8px 12px;
-  text-align: left;
   border: none;
-  background: none;
-  font-size: 13px;
+  background: #e2e8f0;
+  color: #475569;
+  border-radius: 8px 8px 0 0;
   cursor: pointer;
-  transition: background 0.1s;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.2s;
+  min-height: 40px;
 }
 
-.dropdown-item:hover {
-  background: #f3f4f6;
+.canvas-tab:hover {
+  background: #cbd5e1;
+  transform: translateY(-1px);
 }
 
-.dropdown-item:active {
-  background: #e5e7eb;
+.canvas-tab.active {
+  background: white;
+  color: #1e40af;
+  box-shadow: 0 -2px 8px rgba(59, 130, 246, 0.15);
+  border-bottom: 2px solid #3b82f6;
 }
 
-/* Dark mode */
-.theme-dark .dropdown-menu {
-  background: #1f2937;
-  border-color: #374151;
-  color: white;
+.canvas-tab-input {
+  padding: 6px 10px;
+  border: 2px solid #3b82f6;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  background: white;
+  min-width: 100px;
+  outline: none;
 }
 
-.theme-dark .dropdown-item:hover {
-  background: #374151;
+.tab-icon {
+  font-size: 14px;
+  width: 20px;
+  text-align: center;
+}
+
+.tab-label {
+  font-size: 13px;
+}
+
+.tab-delete-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: #fee2e2;
+  color: #dc2626;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.2s;
+  margin-left: 4px;
+}
+
+.canvas-tab-wrapper:hover .tab-delete-btn {
+  opacity: 1;
+}
+
+.tab-delete-btn:hover {
+  background: #fecaca;
+}
+
+.new-workspace-tab {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7) !important;
+  color: #059669 !important;
+  border: 2px dashed #6ee7b7;
+}
+
+.new-workspace-tab:hover {
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0) !important;
+  transform: translateY(-1px) scale(1.05);
+}
+
+/* Scroll horizontal suave */
+.canvas-tab-group::-webkit-scrollbar {
+  height: 4px;
+}
+
+.canvas-tab-group::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.canvas-tab-group::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
 }

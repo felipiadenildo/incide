@@ -2,59 +2,161 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 6px 10px;
-  background: rgba(255, 255, 255, 0.85);
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border-bottom: 1px solid #e5e7eb;
-  backdrop-filter: blur(6px);
-  font-size: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  min-height: 56px;
+  font-family: 'Inter', -apple-system, sans-serif;
+  position: relative;
 }
 
-.canvas-toolbar .toolbar-group {
+/* ================================= */
+/* 🔗 ESQUERDA - GENERAL TOOLS */
+/* ================================= */
+.toolbar-left {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
 }
 
-.canvas-toolbar .toolbar-btn {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  border: 1px solid #e5e7eb;
-  background: #f9fafb;
-  color: #4b5563;
-  display: inline-flex;
+/* Ícones Minimalistas 36x36 */
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  padding: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #64748b;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-icon:not(.disabled):hover {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.08);
+  color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.btn-icon:not(.disabled):active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Disabled */
+.btn-icon.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-icon.disabled:hover {
+  border-color: transparent;
+  background: rgba(0, 0, 0, 0.04);
+  transform: none;
+  color: #9ca3af;
+}
+
+/* Mode Selector */
+.mode-selector {
+  position: relative;
+}
+
+.mode-selector .btn-icon {
+  border-radius: 10px 10px 0 0;
+}
+
+/* Dropdown */
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.dropdown-item {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  text-align: left;
   font-size: 14px;
-  line-height: 1;
-  transition:
-    background 120ms ease,
-    border-color 120ms ease,
-    color 120ms ease,
-    transform 80ms ease;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.15s;
 }
 
-.canvas-toolbar .toolbar-btn:hover {
-  background: #eef2ff;
-  border-color: #c7d2fe;
-  color: #1d4ed8;
+.dropdown-item:hover {
+  background: #f8fafc;
 }
 
-.canvas-toolbar .toolbar-btn:active {
-  transform: translateY(1px);
+/* Selection Counter CENTRAL */
+.selection-counter {
+  min-width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-.canvas-toolbar .toolbar-btn-active {
-  background: #e0ecff;
-  border-color: #93c5fd;
-  color: #1d4ed8;
+/* ================================= */
+/* 🔗 DIREITA - CONTEXTUAL TOOLS */
+/* ================================= */
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.canvas-toolbar .toolbar-label {
-  font-size: 11px;
-  color: #6b7280;
-  padding: 0 4px;
+/* Editor Toggle */
+.editor-toggle.visual {
+  color: #10b981;
+}
+
+.editor-toggle.code {
+  color: #3b82f6;
+}
+
+/* Responsive - Stack vertical mobile */
+@media (max-width: 768px) {
+  .canvas-toolbar {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    align-items: stretch;
+  }
+  
+  .toolbar-left, .toolbar-right {
+    justify-content: center;
+    gap: 12px;
+  }
+  
+  .selection-counter {
+    order: -1;
+  }
+}
+
+/* High DPI */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .btn-icon {
+    border-width: 1px;
+  }
 }

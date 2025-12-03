@@ -1,94 +1,147 @@
 /**
- * CanvasToolbar - Toolbar de ações do Canvas (ícones only)
- *
- * Fica ACIMA do canvas, com:
- * - Undo / Redo
- * - Zoom in / out / reset
- * - Toggle grid
+ * CanvasToolbar - Layout ESQUERDA/DIREITA + Ícones minimalistas alinhados
+ * 🔗 ESQUERDA: Gerais (Mode/Zoom/Grid) | DIREITA: Seleção (Edit/Delete)
+ * 📱 Responsivo + Comentado para edição futura
  */
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useAppStore } from '../../../store/useAppStore'
 import './CanvasToolbar.css'
 
-// CanvasToolbar.jsx
 export function CanvasToolbar() {
-  const undo = useAppStore((state) => state.undo);
-  const redo = useAppStore((state) => state.redo);
-  const addZoom = useAppStore((state) => state.addZoom);
-  const resetView = useAppStore((state) => state.resetView);
-  const toggleGrid = useAppStore((state) => state.toggleGrid);
-  const canvasView = useAppStore((state) => state.canvasView);
-  const getSelectionCount = useAppStore((state) => state.getSelectionCount);
-  const selectionCount = getSelectionCount();
+  const [showModeDropdown, setShowModeDropdown] = useState(false)
+  
+  const {
+    getSelectionCount,
+    getSelectedElements,
+    changeActiveWorkspaceType,
+    toggleGrid,
+    resetView,
+    setEditorMode,
+    editorMode,
+    deleteElement,
+    clearSelection
+  } = useAppStore()
 
+  const selectionCount = getSelectionCount()
+  const canEditSelection = selectionCount > 0
+
+  // ===============================
+  // 🔧 WORKSPACE MODES (ESQUERDA)
+  // ===============================
+  const workspaceModes = [
+    { id: 'sandbox', icon: '●', label: 'Mixed', tooltip: 'Todos elementos' },
+    { id: 'tikz', icon: '▱', label: 'TikZ', tooltip: 'Diagramas TikZ' },
+    { id: 'circuittikz', icon: '⟟', label: 'Circuit', tooltip: 'Circuitos' }
+  ]
+
+  const handleModeChange = (typeId) => {
+    changeActiveWorkspaceType(typeId)
+    setShowModeDropdown(false)
+  }
+
+  // ===============================
+  // 🔧 SELECTION TOOLS (DIREITA)
+  // ===============================
+  const handleDelete = () => {
+    if (!canEditSelection) return
+    clearSelection()
+  }
+
+  const toggleEditorMode = () => {
+    setEditorMode(editorMode === 'visual' ? 'code' : 'visual')
+  }
 
   return (
     <div className="canvas-toolbar">
-      <div className="toolbar-group">
-        <button
-          className="toolbar-btn"
-          type="button"
-          onClick={undo}
-          title="Undo (Ctrl+Z)"
-        >
-          ↶
+      {/* ================================= */
+      /* 🔗 ESQUERDA: GENERAL TOOLS */
+      /* ================================= */}
+      <div className="toolbar-left">
+        {/* Workspace Mode Dropdown */}
+        <div className="mode-selector">
+          <button 
+            className="btn-icon"
+            onClick={() => setShowModeDropdown(!showModeDropdown)}
+            title="Workspace Mode"
+          >
+            {workspaceModes[0].icon}▾
+          </button>
+          
+          {showModeDropdown && (
+            <div className="dropdown">
+              {workspaceModes.map(mode => (
+                <button
+                  key={mode.id}
+                  className="dropdown-item"
+                  onClick={() => handleModeChange(mode.id)}
+                >
+                  {mode.icon} {mode.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* View Controls */}
+        <button className="btn-icon" onClick={toggleGrid} title="Grid (G)">
+          ⋋
         </button>
-        <button
-          className="toolbar-btn"
-          type="button"
-          onClick={redo}
-          title="Redo (Ctrl+Shift+Z)"
-        >
-          ↷
+        <button className="btn-icon" onClick={resetView} title="Reset (R)">
+          ⟲
         </button>
       </div>
 
-      <div className="toolbar-group">
-        <button
-          className="toolbar-btn"
-          type="button"
-          onClick={() => addZoom(0.1)}
-          title="Zoom In"
-        >
-          ＋
-        </button>
-        <button
-          className="toolbar-btn"
-          type="button"
-          onClick={() => addZoom(-0.1)}
-          title="Zoom Out"
-        >
-          －
-        </button>
-        <button
-          className="toolbar-btn"
-          type="button"
-          onClick={resetView}
-          title="Reset View"
-        >
-          ⤢
-        </button>
-        <span className="toolbar-label">
-          {Math.round(canvasView.zoom * 100)}%
-        </span>
-      </div>
+      {/* ================================= */
+      /* 📏 SELECTION COUNTER CENTRAL */
+      /* ================================= */}
+      {selectionCount > 0 && (
+        <div className="selection-counter" title={`${selectionCount} selecionados`}>
+          {selectionCount}
+        </div>
+      )}
 
-      <div className="toolbar-group">
-        <button
-          className={
-            'toolbar-btn' +
-            (canvasView.showGrid ? ' toolbar-btn-active' : '')
-          }
-          type="button"
-          onClick={toggleGrid}
-          title="Toggle Grid"
+      {/* ================================= */
+      /* 🔗 DIREITA: CONTEXTUAL TOOLS */
+      /* ================================= */}
+      <div className="toolbar-right">
+        {/* Flip/Rotate (disabled sem seleção) */}
+        <button 
+          className={`btn-icon ${canEditSelection ? '' : 'disabled'}`}
+          onClick={() => {}} // flipH
+          title="Flip Horizontal (requer seleção)"
+          disabled={!canEditSelection}
         >
-          #⃣
+          ⟷
         </button>
-        <span className="toolbar-label">
-          Sel: {selectionCount}
-        </span>
+        
+        <button 
+          className={`btn-icon ${canEditSelection ? '' : 'disabled'}`}
+          onClick={() => {}} // rotate
+          title="Rotate 90° (requer seleção)"
+          disabled={!canEditSelection}
+        >
+          ⟳
+        </button>
+
+        {/* Delete (disabled sem seleção) */}
+        <button 
+          className={`btn-icon ${canEditSelection ? '' : 'disabled'}`}
+          onClick={handleDelete}
+          title="Delete (Del) - requer seleção"
+          disabled={!canEditSelection}
+        >
+          🗑
+        </button>
+
+        {/* Editor Toggle */}
+        <button 
+          className={`btn-icon editor-toggle ${editorMode}`}
+          onClick={toggleEditorMode}
+          title={`Editor: ${editorMode}`}
+        >
+          {editorMode === 'visual' ? '👁' : '✎'}
+        </button>
       </div>
     </div>
   )
