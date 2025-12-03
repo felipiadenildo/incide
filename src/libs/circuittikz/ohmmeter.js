@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
         const ohmmeter = {
+  label: "Ohmmeter",
+  type: "ohmmeter",
         id: 'circuittikz:ohmmeter',
         library: 'circuittikz',
         type: 'elemento',
@@ -54,7 +56,7 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(ohmmeter);
+        elementRegistry.register(ohmmeter.type, ohmmeter);
 console.log("✅ ohmmeter registrado");
 
 

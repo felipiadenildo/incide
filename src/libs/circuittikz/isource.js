@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
         const isource = {
+  label: "Isource",
+  type: "isource",
         id: 'circuittikz:isource',
         library: 'circuittikz',
         type: 'elemento',
@@ -55,7 +57,7 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(isource);
+        elementRegistry.register(isource.type, isource);
 console.log("✅ isource registrado");
 
         export default isource;

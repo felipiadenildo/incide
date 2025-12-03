@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
         const relaySpdt = {
+  label: "Relay Spdt",
+  type: "relayspdt",
         id: 'circuittikz:relay_spdt',
         library: 'circuittikz',
         type: 'elemento',
@@ -56,6 +58,6 @@ import { elementRegistry } from '../elementRegistry.js';
 
         export default relaySpdt;
 
-        elementRegistry.register(relaySpdt);
+        elementRegistry.register(relaySpdt.type, relaySpdt);
 console.log("✅ relaySpdt registrado");
 

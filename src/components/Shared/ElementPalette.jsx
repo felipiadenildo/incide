@@ -16,15 +16,22 @@ export function ElementPalette({ onInsert }) {
   const elements = useMemo(() => {
     const allElements = elementRegistry.getAll();
     
+    // 🔒 Proteção contra label/category undefined
+    const safeElements = allElements.map(el => ({
+      ...el,
+      label: el?.label || el?.type || el?.id || 'Sem nome',
+      category: el?.category || 'outros'
+    })).sort((a, b) => 
+      (a.label || '').localeCompare(b.label || '')
+    );
+    
     if (projectType === 'sandbox') {
       // Sandbox: todos os elementos
-      return allElements.sort((a, b) => a.label.localeCompare(b.label));
+      return safeElements;
     }
     
     // tikz/circuitikz: só elementos da lib correspondente
-    return allElements
-      .filter((el) => el.library === projectType)
-      .sort((a, b) => a.label.localeCompare(b.label));
+    return safeElements.filter((el) => el.library === projectType);
   }, [projectType]);
 
   if (elements.length === 0) {

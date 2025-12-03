@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
         const npnDescriptor = {
+  label: "Npn",
+  type: "npn",
         id: 'circuittikz:npn',
         library: 'circuittikz',
         type: 'elemento',
@@ -54,7 +56,7 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(npnDescriptor);
+        elementRegistry.register(npnDescriptor.type, npnDescriptor);
 console.log("✅ npnDescriptor registrado");
 
 

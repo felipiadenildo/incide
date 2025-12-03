@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
         const vsource = {
+  label: "Vsource",
+  type: "vsource",
         id: 'circuittikz:vsource',
         library: 'circuittikz',
         type: 'elemento',
@@ -55,7 +57,7 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(vsource);
+        elementRegistry.register(vsource.type, vsource);
 console.log("✅ vsource registrado");
 
 

@@ -1,228 +1,200 @@
 /**
- * SVGRenderer - Renderiza elementos como SVG dentro do Canvas
- * ✅ CORREÇÃO: Proteção total + element definido
+ * elementRegistry.js - Registro central de tipos de elementos
+ * Define todos os tipos de elementos e suas propriedades de renderização
  */
 
-import React, { useMemo, memo } from 'react'
-import { useAppStore } from '../../store/useAppStore'
-import { elementRegistry } from '../../libs/elementRegistry'
-import './SVGRenderer.css'
+class ElementRegistry {
+  constructor() {
+    this.elements = new Map();
+  }
+
+  /**
+   * Registra um novo tipo de elemento
+   * @param {string} type - Tipo do elemento (ex: 'resistor', 'capacitor')
+   * @param {object} descriptor - Descritor com svgRender, tikzCode, etc
+   */
+  register(type, descriptor) {
+    if (!type || typeof type !== 'string') {
+      throw new Error('Type deve ser uma string válida');
+    }
+    if (!descriptor || typeof descriptor !== 'object') {
+      throw new Error('Descriptor deve ser um objeto válido');
+    }
+    this.elements.set(type, descriptor);
+  }
+
+  /**
+   * Obtém o descritor de um tipo de elemento
+   * @param {string} type - Tipo do elemento
+   * @returns {object|undefined} Descritor do elemento ou undefined
+   */
+  get(type) {
+    return this.elements.get(type);
+  }
+
+  /**
+   * Verifica se um tipo existe
+   * @param {string} type - Tipo do elemento
+   * @returns {boolean}
+   */
+  has(type) {
+    return this.elements.has(type);
+  }
+
+  /**
+   * Lista todos os tipos registrados
+   * @returns {Array<string>}
+   */
+  listTypes() {
+    return Array.from(this.elements.keys());
+  }
+
+  /**
+   * Remove um tipo de elemento
+   * @param {string} type - Tipo do elemento
+   * @returns {boolean} true se removido, false se não existia
+   */
+  unregister(type) {
+    return this.elements.delete(type);
+  }
+
+  /**
+   * Limpa todos os elementos registrados
+   */
+  clear() {
+    this.elements.clear();
+  }
+
+  // ✅ ADICIONE ESTES MÉTODOS NO FINAL do elementRegistry.js
 
 /**
- * 🔥 Componente memoizado para cada elemento individual
+ * Retorna TODOS os elementos registrados (para ElementPalette)
+ * @returns {Array} Array de descritores
  */
-const SVGElement = memo(({ elem, isSelected, zoom, onSelect, onToggleSelect }) => {
-  console.log(`[SVGElement] render ${elem.id}`, { isSelected });
+getAll() {
+  return Array.from(this.elements.values());
+}
 
-  try {
-    const descriptor = elementRegistry.get(elem.type);
-    
-    // 🔥 PROTEÇÃO 1: descriptor existe?
-    if (!descriptor) {
-      console.error(`❌ Descriptor não encontrado: ${elem.type}`);
-      return (
-        <rect 
-          x={elem.x * zoom - 10} 
-          y={elem.y * zoom - 10} 
-          width={20} 
-          height={20} 
-          fill="#ff4444" 
-          stroke="#ff0000" 
-          strokeWidth="2"
-        />
-      );
-    }
+/**
+ * Retorna elementos por categoria
+ * @param {string} category - 'shape', 'circuit', etc.
+ * @returns {Array} Elementos da categoria
+ */
+getByCategory(category) {
+  return Array.from(this.elements.values()).filter(el => el.category === category);
+}
 
-    // 🔥 PROTEÇÃO 2: svgRender existe e é função?
-    if (!descriptor.svgRender || typeof descriptor.svgRender !== 'function') {
-      console.error(`❌ svgRender inválido: ${elem.type}`);
-      return (
-        <rect 
-          x={elem.x * zoom - 10} 
-          y={elem.y * zoom - 10} 
-          width={20} 
-          height={20} 
-          fill="#ffaa44" 
-          stroke="#ff8800" 
-          strokeWidth="2"
-        />
-      );
-    }
+/**
+ * Conta total de elementos registrados
+ * @returns {number}
+ */
+size() {
+  return this.elements.size;
+}
 
-    // 🔥 EXECUTAR svgRender COM PARAMETROS CORRETOS
-    const svgProps = descriptor.svgRender(elem, isSelected, zoom);
-
-    // 🔥 PROTEÇÃO 3: svgProps válido?
-    if (!svgProps || !svgProps.tag) {
-      console.error(`❌ svgRender retornou inválido '${elem.type}':`, svgProps);
-      return (
-        <rect 
-          x={elem.x * zoom - 10} 
-          y={elem.y * zoom - 10} 
-          width={20} 
-          height={20} 
-          fill="#ff4444" 
-          stroke="#ff0000" 
-          strokeWidth="2"
-        />
-      );
-    }
-
-    const handleClick = (e) => {
-      e.stopPropagation();
-      console.log(`[SVGElement] click ${elem.id}`, { shiftKey: e.shiftKey });
-      if (e.shiftKey) {
-        onToggleSelect(elem.id);
-      } else {
-        onSelect(elem.id);
-      }
-    };
-
-    // Suporte a <g> com children
-    if (svgProps.tag === 'g' && Array.isArray(svgProps.children)) {
-      const { children, ...groupProps } = svgProps;
-      return (
-        <g onClick={handleClick} style={{ cursor: 'pointer' }} {...groupProps}>
-          {children.map((child, index) => renderSvgElement(child, `${elem.id}-child-${index}`))}
-        </g>
-      );
-    }
-
-    return (
-      <g onClick={handleClick} style={{ cursor: 'pointer' }}>
-        {renderSvgElement(svgProps, elem.id)}
-      </g>
-    );
-  } catch (e) {
-    console.error(`[SVGElement] Erro ao renderizar '${elem.type}':`, e);
-    return (
-      <rect 
-        x={elem.x * zoom - 10} 
-        y={elem.y * zoom - 10} 
-        width={20} 
-        height={20} 
-        fill="#ff4444" 
-        stroke="#ff0000" 
-        strokeWidth="2"
-      />
-    );
+get(type) {
+    return this.elements.get(type);
   }
-}, (prevProps, nextProps) => {
-  return (
-    prevProps.elem.id === nextProps.elem.id &&
-    prevProps.isSelected === nextProps.isSelected &&
-    prevProps.zoom === nextProps.zoom
-  );
+
+  // ✅ NOVOS MÉTODOS
+  getAll() {
+    return Array.from(this.elements.values());
+  }
+  
+  getByCategory(category) {
+    return Array.from(this.elements.values()).filter(el => el.category === category);
+  }
+  
+  size() {
+    return this.elements.size;
+  }
+
+}
+
+// Instância singleton
+export const elementRegistry = new ElementRegistry();
+
+// Registrar elementos básicos
+elementRegistry.register('resistor', {
+
+  svgRender: (elem, isSelected, zoom) => ({
+    tag: 'g',
+    children: [
+      {
+        tag: 'rect',
+        x: elem.x * zoom - 0.5,
+        y: elem.y * zoom - 0.15,
+        width: 1,
+        height: 0.3,
+        fill: 'none',
+        stroke: isSelected ? '#3b82f6' : '#000',
+        strokeWidth: isSelected ? 0.04 : 0.02,
+      },
+      {
+        tag: 'line',
+        x1: elem.x * zoom - 0.75,
+        y1: elem.y * zoom,
+        x2: elem.x * zoom - 0.5,
+        y2: elem.y * zoom,
+        stroke: '#000',
+        strokeWidth: 0.02,
+      },
+      {
+        tag: 'line',
+        x1: elem.x * zoom + 0.5,
+        y1: elem.y * zoom,
+        x2: elem.x * zoom + 0.75,
+        y2: elem.y * zoom,
+        stroke: '#000',
+        strokeWidth: 0.02,
+      },
+    ],
+  }),
+  tikzCode: (elem) => `\\draw (${elem.x},${elem.y}) to[R] ++(2,0);`,
 });
 
-export function SVGRenderer() {
-  const elements = useAppStore((s) => s.elements);
-  const selectedIdsSet = useAppStore((s) => s.selectedIds);
-  const canvasView = useAppStore((s) => s.canvasView);
-  const selectElement = useAppStore((s) => s.selectElement);
-  const toggleSelection = useAppStore((s) => s.toggleSelection);
-  const clearSelection = useAppStore((s) => s.clearSelection);
+elementRegistry.register('capacitor', {
 
-  console.log("[SVGRenderer] render", {
-    elementsCount: elements.length,
-    selectedCount: selectedIdsSet.size,
-    zoom: canvasView.zoom,
-  });
+  svgRender: (elem, isSelected, zoom) => ({
+    tag: 'g',
+    children: [
+      {
+        tag: 'line',
+        x1: elem.x * zoom,
+        y1: elem.y * zoom - 0.3,
+        x2: elem.x * zoom,
+        y2: elem.y * zoom + 0.3,
+        stroke: isSelected ? '#3b82f6' : '#000',
+        strokeWidth: isSelected ? 0.04 : 0.02,
+      },
+      {
+        tag: 'line',
+        x1: elem.x * zoom + 0.1,
+        y1: elem.y * zoom - 0.3,
+        x2: elem.x * zoom + 0.1,
+        y2: elem.y * zoom + 0.3,
+        stroke: isSelected ? '#3b82f6' : '#000',
+        strokeWidth: isSelected ? 0.04 : 0.02,
+      },
+    ],
+  }),
+  tikzCode: (elem) => `\\draw (${elem.x},${elem.y}) to[C] ++(2,0);`,
+});
 
-  const selectedIds = useMemo(() => Array.from(selectedIdsSet), [selectedIdsSet]);
+elementRegistry.register('wire', {
 
-  return (
-    <svg
-      className="svg-renderer"
-      viewBox={`${canvasView.panX} ${canvasView.panY} 20 15`}
-      onClick={() => {
-        console.log("[SVGRenderer] background click, clearing selection");
-        clearSelection();
-      }}
-    >
-      {/* Grid */}
-      {canvasView.showGrid && (
-        <defs>
-          <pattern
-            id="grid-pattern"
-            width={canvasView.gridSize}
-            height={canvasView.gridSize}
-            patternUnits="userSpaceOnUse"
-          >
-            <path
-              d={`M ${canvasView.gridSize} 0 L 0 0 0 ${canvasView.gridSize}`}
-              fill="none"
-              stroke="#e5e7eb"
-              strokeWidth="0.02"
-            />
-          </pattern>
-        </defs>
-      )}
+  svgRender: (elem, isSelected, zoom) => ({
+    tag: 'line',
+    x1: elem.x1 * zoom,
+    y1: elem.y1 * zoom,
+    x2: elem.x2 * zoom,
+    y2: elem.y2 * zoom,
+    stroke: isSelected ? '#3b82f6' : '#000',
+    strokeWidth: isSelected ? 0.04 : 0.02,
+  }),
+  tikzCode: (elem) => `\\draw (${elem.x1},${elem.y1}) -- (${elem.x2},${elem.y2});`,
+});
 
-      {canvasView.showGrid && (
-        <rect
-          x={-100}
-          y={-100}
-          width={200}
-          height={200}
-          fill="url(#grid-pattern)"
-        />
-      )}
 
-      {/* Elementos */}
-      {elements.map((elem) => (
-        <SVGElement
-          key={elem.id}
-          elem={elem}
-          isSelected={selectedIds.includes(elem.id)}
-          zoom={canvasView.zoom}
-          onSelect={selectElement}
-          onToggleSelect={toggleSelection}
-        />
-      ))}
-    </svg>
-  );
-}
 
-/**
- * Renderiza nó SVG a partir de { tag, ...props }
- */
-function renderSvgElement(props, key) {
-  if (!props || !props.tag) return null;
-  
-  const { tag, children, content, className, ...rest } = props;
-
-  switch (tag) {
-    case 'circle':
-      return <circle key={key} className={className} {...rest} />;
-    case 'rect':
-      return <rect key={key} className={className} {...rest} />;
-    case 'line':
-      return <line key={key} className={className} {...rest} />;
-    case 'path':
-      return <path key={key} className={className} {...rest} />;
-    case 'text':
-      return (
-        <text key={key} className={className} {...rest}>
-          {content}
-        </text>
-      );
-    case 'g':
-      return (
-        <g key={key} className={className} {...rest}>
-          {Array.isArray(children)
-            ? children.map((child, index) =>
-                renderSvgElement(child, `${key}-child-${index}`)
-              )
-            : null}
-        </g>
-      );
-    case 'ellipse':
-      return <ellipse key={key} className={className} {...rest} />;
-    default:
-      console.warn(`⚠️ Tag SVG desconhecida: ${tag}`);
-      return <rect key={key} width={20} height={20} fill="#ffaa44" />;
-  }
-}
-
-export default SVGRenderer;
+export default elementRegistry;

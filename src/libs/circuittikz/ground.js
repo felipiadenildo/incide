@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
         const ground = {
+  label: "Ground",
+  type: "ground",
         id: 'circuittikz:ground',
         library: 'circuittikz',
         type: 'elemento',
@@ -60,7 +62,7 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(ground);
+        elementRegistry.register(ground.type, ground);
 console.log("✅ ground registrado");
 
 

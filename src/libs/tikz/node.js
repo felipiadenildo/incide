@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
 const node = {
+  label: "Node",
+  type: "node",
   id: 'tikz:node',
   library: 'tikz',
   type: 'elemento',
@@ -95,7 +97,7 @@ codeGenerator(element) {
   }
 };
 
-elementRegistry.register(node);
+elementRegistry.register(node.type, node);
 console.log("✅ node registrado");
 
 

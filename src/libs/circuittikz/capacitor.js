@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
 const capacitor = {
+  label: "Capacitor",
+  type: "capacitor",
     id: 'circuittikz:capacitor',
     library: 'circuittikz',
     type: 'elemento',
@@ -55,7 +57,7 @@ const capacitor = {
     }
 };
 
-elementRegistry.register(capacitor);
+elementRegistry.register(capacitor.type, capacitor);
 console.log("✅ capacitor registrado");
 
 

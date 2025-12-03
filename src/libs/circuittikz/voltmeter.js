@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
         const descriptor = {
+  label: "Voltmeter",
+  type: "voltmeter",
         id: 'circuittikz:voltmeter',
         library: 'circuittikz',
         type: 'elemento',
@@ -54,6 +56,7 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(descriptor.id, descriptor);
+        elementRegistry.register(descriptor.type, descriptor);
+  console.log('✅', descriptor.type, 'registrado');;
 
         export default descriptor;

@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
 const descriptor = {
+  label: "Diode",
+  type: "diode",
     id: 'circuittikz:diode',
     library: 'circuittikz',
     type: 'elemento',
@@ -53,6 +55,7 @@ const descriptor = {
     }
 };
 
-elementRegistry.register(descriptor.id, descriptor);
+elementRegistry.register(descriptor.type, descriptor);
+  console.log('✅', descriptor.type, 'registrado');;
 
 export default descriptor;

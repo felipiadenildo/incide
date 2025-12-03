@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
         const pnjDescriptor = {
+  label: "Pnj",
+  type: "pnj",
         id: 'circuittikz:pnj',
         library: 'circuittikz',
         type: 'elemento',
@@ -54,7 +56,7 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(pnjDescriptor);
+        elementRegistry.register(pnjDescriptor.type, pnjDescriptor);
 console.log("✅ pnjDescriptor registrado");
 
 

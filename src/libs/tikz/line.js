@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
 const line = {
+  label: "Line",
+  type: "line",
   id: 'tikz:line',
   library: 'tikz',
   type: 'elemento',
@@ -93,7 +95,7 @@ const line = {
   }
 };
 
-elementRegistry.register(line);
+elementRegistry.register(line.type, line);
 console.log("✅ line registrado");
 
 

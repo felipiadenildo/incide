@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
 const ellipse = {
+  label: "Ellipse",
+  type: "ellipse",
   id: 'tikz:ellipse',
   library: 'tikz',
   type: 'elemento',
@@ -86,7 +88,7 @@ const ellipse = {
   }
 };
 
-elementRegistry.register(ellipse);
+elementRegistry.register(ellipse.type, ellipse);
 console.log("✅ ellipse registrado");
 
 

@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
         const zener = {
+  label: "Zener",
+  type: "zener",
         id: 'circuittikz:zener',
         library: 'circuittikz',
         type: 'elemento',
@@ -56,7 +58,7 @@ import { elementRegistry } from '../elementRegistry.js';
         };
 
         console.log('✅ ${{window.location.pathname.includes("tikz") ? "tikz" : "circuittikz"}}:${os.path.basename(filepath).replace(".js", "")} registrado');
-elementRegistry.register(zener);
+elementRegistry.register(zener.type, zener);
 console.log("✅ zener registrado");
 
 

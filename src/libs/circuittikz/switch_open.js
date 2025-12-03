@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
 const descriptor = {
+  label: "Switch Open",
+  type: "switchopen",
     id: 'circuittikz:switch_open',
     library: 'circuittikz',
     type: 'elemento',
@@ -54,6 +56,7 @@ const descriptor = {
     }
 };
 
-elementRegistry.register(descriptor.id, descriptor);
+elementRegistry.register(descriptor.type, descriptor);
+  console.log('✅', descriptor.type, 'registrado');;
 
 export default descriptor;

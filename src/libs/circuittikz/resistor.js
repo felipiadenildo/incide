@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
         const resistor = {
+  label: "Resistor",
+  type: "resistor",
         id: 'circuittikz:resistor',
         library: 'circuittikz',
         type: 'elemento',
@@ -65,7 +67,7 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(resistor);
+        elementRegistry.register(resistor.type, resistor);
 console.log("✅ resistor registrado");
 
 

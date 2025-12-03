@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
         const ammeter = {
+  label: "Ammeter",
+  type: "ammeter",
         id: 'circuittikz:ammeter',
         library: 'circuittikz',
         type: 'elemento',
@@ -54,7 +56,7 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(ammeter);
+        elementRegistry.register(ammeter.type, ammeter);
 console.log("✅ ammeter registrado");
 
 

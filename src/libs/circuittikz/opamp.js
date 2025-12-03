@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
         const opamp = {
+  label: "Opamp",
+  type: "opamp",
         id: 'circuittikz:opamp',
         library: 'circuittikz',
         type: 'elemento',
@@ -56,6 +58,6 @@ import { elementRegistry } from '../elementRegistry.js';
 
         export default opamp;
 
-        elementRegistry.register(opamp);
+        elementRegistry.register(opamp.type, opamp);
 console.log("✅ opamp registrado");
 

@@ -14,6 +14,8 @@ export class ElementFactory {
     const id = `${type}-${uuidv4()}`
 
     const element = {
+  label: "Element Factory",
+  type: "elementFactory",
       id,
       type,
       ...descriptor.defaults,

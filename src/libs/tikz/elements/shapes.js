@@ -5,6 +5,8 @@
 import { elementRegistry } from '../../elementRegistry'
 
 export const CIRCLE = {
+  label: "Shapes",
+  type: "shapes",
   id: 'circle',
   type: 'shape',
   library: 'tikz',
@@ -76,6 +78,8 @@ export const CIRCLE = {
 }
 
 export const RECTANGLE = {
+  label: "Shapes",
+  type: "shapes",
   id: 'rectangle',
   type: 'shape',
   library: 'tikz',
@@ -152,6 +156,8 @@ export const RECTANGLE = {
 }
 
 export const LINE = {
+  label: "Shapes",
+  type: "shapes",
   id: 'line',
   type: 'line',
   library: 'tikz',
@@ -218,7 +224,16 @@ export const LINE = {
 
 // Registrar
 export function registerTikZShapes() {
-  elementRegistry.register('circle', CIRCLE)
-  elementRegistry.register('rectangle', RECTANGLE)
-  elementRegistry.register('line', LINE)
+  elementRegistry.register('circle', CIRCLE);
+  console.log('✅ circle registrado');;
+  console.log('✅ circle registrado');;
+  console.log('✅ circle registrado');
+  elementRegistry.register('rectangle', RECTANGLE);
+  console.log('✅ rectangle registrado');;
+  console.log('✅ rectangle registrado');;
+  console.log('✅ rectangle registrado');
+  elementRegistry.register('line', LINE);
+  console.log('✅ line registrado');;
+  console.log('✅ line registrado');;
+  console.log('✅ line registrado');
 }

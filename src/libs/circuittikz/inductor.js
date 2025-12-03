@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
         const inductor = {
+  label: "Inductor",
+  type: "inductor",
         id: 'circuittikz:inductor',
         library: 'circuittikz',
         type: 'elemento',
@@ -55,7 +57,7 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(inductor);
+        elementRegistry.register(inductor.type, inductor);
 console.log("✅ inductor registrado");
 
 

@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
         const thermistor = {
+  label: "Thermistor",
+  type: "thermistor",
         id: 'circuittikz:thermistor',
         library: 'circuittikz',
         type: 'elemento',
@@ -57,6 +59,6 @@ import { elementRegistry } from '../elementRegistry.js';
 
         export default thermistor;
 
-        elementRegistry.register(thermistor);
+        elementRegistry.register(thermistor.type, thermistor);
 console.log("✅ thermistor registrado");
 

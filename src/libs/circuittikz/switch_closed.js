@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
 const switchClosed = {
+  label: "Switch Closed",
+  type: "switchclosed",
   id: 'circuittikz:switch_closed',
   library: 'circuittikz',
   type: 'switch_closed',
@@ -25,6 +27,6 @@ const switchClosed = {
   }
 };
 
-elementRegistry.register(switchClosed);
+elementRegistry.register(switchClosed.type, switchClosed);
 console.log("✅ circuittikz:switch_closed registrado");
 export default switchClosed;

@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
         const exportDefaultObject = {
+  label: "Euroresistor",
+  type: "euroresistor",
         id: 'circuittikz:euroresistor',
         library: 'circuittikz',
         type: 'elemento',
@@ -54,7 +56,7 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(exportDefaultObject);
+        elementRegistry.register(exportDefaultObject.type, exportDefaultObject);
 console.log("✅ exportDefaultObject registrado");
 
 

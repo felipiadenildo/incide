@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
         const fuseElement = {
+  label: "Fuse",
+  type: "fuse",
         id: 'circuittikz:fuse',
         library: 'circuittikz',
         type: 'elemento',
@@ -54,7 +56,7 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(fuseElement);
+        elementRegistry.register(fuseElement.type, fuseElement);
 console.log("✅ fuseElement registrado");
 
 

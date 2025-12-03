@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
         const capacitorPolar = {
+  label: "Capacitor Polar",
+  type: "capacitorpolar",
         id: 'circuittikz:capacitor_polar',
         library: 'circuittikz',
         type: 'elemento',
@@ -55,7 +57,7 @@ import { elementRegistry } from '../elementRegistry.js';
         }
         };
 
-        elementRegistry.register(capacitorPolar);
+        elementRegistry.register(capacitorPolar.type, capacitorPolar);
 console.log("✅ capacitorPolar registrado");
 
 

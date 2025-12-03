@@ -1,6 +1,8 @@
 import { elementRegistry } from '../elementRegistry.js';
 
 const potentiometer = {
+  label: "Potentiometer",
+  type: "potentiometer",
     id: 'circuittikz:potentiometer',
     library: 'circuittikz',
     type: 'elemento',
@@ -56,6 +58,6 @@ const potentiometer = {
 
 export default potentiometer;
 
-elementRegistry.register(potentiometer);
+elementRegistry.register(potentiometer.type, potentiometer);
 console.log("✅ potentiometer registrado");
 
